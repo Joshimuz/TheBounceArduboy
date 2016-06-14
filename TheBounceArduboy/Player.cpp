@@ -91,7 +91,7 @@ void PlayerClass::update(Arduboy& arduboy)
 	y += yVelocity;
 	x += xVelocity;
 }
-void PlayerClass::respawn(short spawnX, short spawnY)
+void PlayerClass::respawn(byte spawnX, byte spawnY)
 {
 	x = spawnX;
 	y = spawnY;

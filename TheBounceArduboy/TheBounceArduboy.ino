@@ -8,7 +8,7 @@
 Arduboy arduboy;
 
 // The current state of the game
-short gameState = 1; // 1 = MainMenu, 2 = Gameplay, 3 = End level transion
+byte gameState = 1; // 1 = MainMenu, 2 = Gameplay, 3 = End level transion
 
 // The selection in the menu
 bool introSelection = 1; 
@@ -16,17 +16,17 @@ bool introSelection = 1;
 bool introChanged; 
 
 // The currently used level
-short currentLevel = 1; 
+byte currentLevel = 1;
 // The size of the array for the current level
-short currentLevelArraySize = 22;
+byte currentLevelArraySize = 22;
 
 // Position of the camera used for drawing
 short camX;
 short camY;
 
 // The respawn position for the player
-short spawnX = 32;
-short spawnY = 32;
+byte spawnX = 32;
+byte spawnY = 32;
 
 // The kill plane at the bottom of the level
 #define MAPFLOOR	300
@@ -36,9 +36,9 @@ struct MapObject
 {
 	short x;
 	short y;
-	short w;
-	short h;
-	short type;
+	byte w;
+	byte h;
+	byte type;
 };
 
 // The levels which are an array holding the MapObject struct for every object in the level

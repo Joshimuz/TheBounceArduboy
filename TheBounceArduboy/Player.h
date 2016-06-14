@@ -24,7 +24,7 @@ class PlayerClass
 	bool botCol;
 
 	void update(Arduboy& arduboy);
-	void respawn(short spawnX, short spawnY);
+	void respawn(byte spawnX, byte spawnY);
 };
 
 extern PlayerClass player;
