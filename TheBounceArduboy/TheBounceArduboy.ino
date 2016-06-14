@@ -4,22 +4,34 @@
 #include "Sprites.h"
 #include "Player.h"
 #include "Arduboy.h"
+
 Arduboy arduboy;
 
-bool introSelection = 1;
-bool introChanged;
-short gameState = 1;
-short currentLevel = 1;
+// The current state of the game
+short gameState = 1; // 1 = MainMenu, 2 = Gameplay, 3 = End level transion
 
+// The selection in the menu
+bool introSelection = 1; 
+// If the menu selection was changed the previous frame
+bool introChanged; 
+
+// The currently used level
+short currentLevel = 1; 
+// The size of the array for the current level
+short currentLevelArraySize = 22;
+
+// Position of the camera used for drawing
 short camX;
 short camY;
 
+// The respawn position for the player
 short spawnX = 32;
 short spawnY = 32;
 
+// The kill plane at the bottom of the level
 #define MAPFLOOR	300
-short currentLevelArraySize = 22;
 
+// The struct for the objects in the level
 struct MapObject
 {
 	short x;
@@ -29,6 +41,7 @@ struct MapObject
 	short type;
 };
 
+// The levels which are an array holding the MapObject struct for every object in the level
 const MapObject level1[22] =
 {
 	{ 0, 64, 64, 4, 0 },
@@ -54,19 +67,22 @@ const MapObject level1[22] =
 	{ 426, -26, 4, 41, 0 },
 	{ 406, -10, 10, 25, 2 }
 };
-
 const MapObject level2[1] =
 {
 	{ 0, 64, 64, 4, 0 }
 };
 
+// Pointer to the current level that is being used
 const MapObject*  currentMapData = level1;
 
 void setup() 
 {
+	// Start arduboy stuff
 	arduboy.begin();
+	// Framerate to 30 due to console peasntry
 	arduboy.setFrameRate(30);
 
+	// Basically setup() for the player but also functions as respawning
 	player.respawn(spawnX, spawnY);
 
 	//arduboy.setRGBled(0, 0, 255); God damn flipped LED Q___Q
@@ -74,13 +90,43 @@ void setup()
 
 void loop() 
 {
+	// Wait for the next frame
 	if (!(arduboy.nextFrame()))
 		return;
+	// Remove everything currently drawn to the screen
 	arduboy.clear();
 
 	// Intro
 	if (gameState == 1)
 	{
+			
+		if (arduboy.pressed(A_BUTTON))
+		{
+			if (introSelection)
+			{
+				// Start the game when PLAY button pressed
+				gameState = 2;
+				// Now that something sudo-random has happened (user input) init the random seed
+				arduboy.initRandomSeed();
+			}
+		}
+		if (arduboy.pressed(LEFT_BUTTON) || arduboy.pressed(RIGHT_BUTTON))
+		{
+			// If the selection didn't change last frame
+			if (!introChanged)
+			{
+				// Change it
+				introSelection = !introSelection;
+				introChanged = true;
+			}
+		}
+		else if (introChanged)
+		{
+			// A frame has passed so reset the value
+			introChanged = false;
+		}
+
+		// Draw the menu
 		arduboy.drawBitmap(0, 0, titleScreen, 128, 42, 1);
 		if (introSelection)
 		{
@@ -91,27 +137,6 @@ void loop()
 		{
 			arduboy.drawBitmap(12, 52, playButton, 31, 16, 1);
 			arduboy.drawBitmap(85, 48, configButton, 31, 16, 1);
-		}
-		
-		if (arduboy.pressed(A_BUTTON))
-		{
-			if (introSelection)
-			{
-				gameState = 2;
-				arduboy.initRandomSeed();
-			}
-		}
-		if (arduboy.pressed(LEFT_BUTTON) || arduboy.pressed(RIGHT_BUTTON))
-		{
-			if (!introChanged)
-			{
-				introSelection = !introSelection;
-				introChanged = true;
-			}
-		}
-		else if (introChanged)
-		{
-			introChanged = false;
 		}
 	} // Intro
 	// Gameplay
