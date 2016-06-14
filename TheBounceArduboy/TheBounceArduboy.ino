@@ -29,7 +29,7 @@ struct MapObject
 	short type;
 };
 
-MapObject level1[22] =
+const MapObject level1[22] =
 {
 	{ 0, 64, 64, 4, 0 },
 	{ 60, 68, 4, 32, 0 },
@@ -55,12 +55,12 @@ MapObject level1[22] =
 	{ 406, -10, 10, 25, 2 }
 };
 
-MapObject level2[1] =
+const MapObject level2[1] =
 {
 	{ 0, 64, 64, 4, 0 }
 };
 
-MapObject*  currentMapData = level1;
+const MapObject*  currentMapData = level1;
 
 void setup() 
 {
@@ -69,7 +69,7 @@ void setup()
 
 	player.respawn(spawnX, spawnY);
 
-	//arduboy.setRGBled(0, 0, 255);
+	//arduboy.setRGBled(0, 0, 255); God damn flipped LED Q___Q
 }
 
 void loop() 
@@ -200,9 +200,6 @@ void loop()
 			}
 		}
 
-		//camX = player.x - 64;
-		//camX = (0.01f)*(player.x - 64) + 0.99f*camX;
-		//camY = (0.01f)*(player.y - 32) + 0.99f*camY;
 		camX = camX + 0.07f * ((player.x - 64) - camX);
 		camY = camY + 0.07f * ((player.y - 32) - camY);
 	}
@@ -226,8 +223,8 @@ void loop()
 				currentMapData = level2;
 				player.respawn(spawnX, spawnY);
 			}
-			
 		}
+		arduboy.tunes.tone(5000, 10);
 	}
 	// Gameplay Draw
 	if (gameState == 2 || gameState == 3)

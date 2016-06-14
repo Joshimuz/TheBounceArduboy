@@ -43,46 +43,20 @@ void PlayerClass::update(Arduboy& arduboy)
 	// Add gravity
 	yVelocity += 0.15f; 
 
-	//if (collisions == 1 || collisions == 11 || collisions == 21)// bottom
-	//{
-	//	yVelocity = fabsf(yVelocity) * -1.1f;
-	//	canJump = true;
-	//	y--;
-	//	botCol = false;
-	//}
-	//else if (collisions == 2 || collisions == 12 || collisions == 22)// top
-	//{
-	//	yVelocity = fabsf(yVelocity) * 1.1f;
-	//	y++;
-	//	topCol = false;
-	//}
-	//if (collisions >= 10 && collisions < 20)// left
-	//{
-	//	xVelocity = fabsf(xVelocity) * 1.5f;
-	//	canJump = true;
-	//	x++;
-	//	leftCol = false;
-	//}
-	//else if (collisions >= 20)// right
-	//{
-	//	xVelocity = fabsf(xVelocity) * -1.5f;
-	//	canJump = true;
-	//	x--;
-	//	rightCol = false;
-	//}
-
 	if (botCol)
 	{
 		yVelocity = fabsf(yVelocity) * -1.1f;
 		canJump = true;
 		//y--;
 		botCol = false;
+		arduboy.tunes.tone(400 + (fabsf(yVelocity) * 50), 10);
 	}
 	else if (topCol)
 	{
 		yVelocity = fabsf(yVelocity) * 1.1f;
 		//y++;
 		topCol = false;
+		arduboy.tunes.tone(400 + (fabsf(yVelocity) * 50), 10);
 	}
 
 	if (rightCol)
@@ -91,6 +65,7 @@ void PlayerClass::update(Arduboy& arduboy)
 		canJump = true;
 		//x--;
 		rightCol = false;
+		arduboy.tunes.tone(400 + (fabsf(xVelocity) * 50), 10);
 	}
 	else if (leftCol)
 	{
@@ -98,6 +73,7 @@ void PlayerClass::update(Arduboy& arduboy)
 		canJump = true;
 		//x++;
 		leftCol = false;
+		arduboy.tunes.tone(400 + (fabsf(xVelocity) * 50), 10);
 	}
 
 	// Add drag

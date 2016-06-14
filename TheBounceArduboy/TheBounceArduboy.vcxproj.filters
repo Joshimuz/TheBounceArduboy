@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="TheBounceArduboy.ino" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.TheBounceArduboy.vsarduino.h">
