@@ -16,21 +16,22 @@ bool introSelection = 1;
 bool introChanged; 
 
 #define LEVEL1ARRAYSIZE		22
-
 #define LEVEL2ARRAYSIZE		13
+#define LEVEL3ARRAYSIZE		14
+#define LEVEL4ARRAYSIZE		43
 
 // The currently used level
-byte currentLevel = 2;
+byte currentLevel = 1;
 // The size of the array for the current level
-byte currentLevelArraySize = LEVEL2ARRAYSIZE;
+byte currentLevelArraySize = LEVEL1ARRAYSIZE;
 
 // Position of the camera used for drawing
 short camX;
 short camY;
 
 // The respawn position for the player
-byte spawnX = 32;
-byte spawnY = 32;
+short spawnX = 32;
+short spawnY = 32;
 
 // The kill plane at the bottom of the level
 #define MAPFLOOR	300
@@ -42,7 +43,7 @@ struct MapObject
 	short y;
 	byte w;
 	byte h;
-	byte type;
+	byte type; // 0 = block, 1 = spike (w 2 smaller than wanted), 2 = endlevel, 3 = checkpoint (2w20h)
 };
 
 // The levels which are an array holding the MapObject struct for every object in the level
@@ -88,9 +89,73 @@ const MapObject level2[LEVEL2ARRAYSIZE] =
 	{ -192, 60, 64, 4, 0},
 	{ -150, 70, 10, 25, 2}
 };
+const MapObject level3[LEVEL3ARRAYSIZE] =
+{
+//    X   Y   W  H  type
+	{ 0, 64, 192, 4, 0 },
+	{ 64, 40, 32, 4, 0 },
+	{ 96, 16, 30, 4, 0 },
+	{ 128, -12, 28, 4, 0 },
+	{ 160, -36, 192, 4, 0 },
+	{ 224, -60, 16, 4, 0 },
+	{ 256, -84, 14, 4, 0 },
+	{ 288, -108, 12, 4, 0 },
+	{ 320, -132, 96, 4, 0 },
+	{ 352, -156, 16, 4, 0 },
+	{ 384, -180, 14, 4, 0 },
+	{ 352, -204, 12, 4, 0 },
+	{ 384, -228, 64, 4, 0 },
+	{ 410, -253, 10, 25, 2 }
+};
+const MapObject level4[LEVEL4ARRAYSIZE] =
+{
+	{ 0, 64, 255, 4, 0 },
+	{ 0, 0, 4, 64, 0 },
+	{ 64, 54, 6, 10, 1},
+	{ 128, 54, 6, 10, 1},
+	{ 138, 54, 6, 10, 1},
+	{ 148, 54, 6, 10, 1},
+	{ 212, 54, 6, 10, 1},
+	{ 222, 54, 6, 10, 1 },
+	{ 247, 54, 6, 10, 1},
+	{ 257, 54, 6, 10, 1 },
+	{ 254, 64, 192, 4, 0},
+	{ 311, 54, 6, 10, 1},
+	{ 321, 54, 6, 10, 1 },
+	{ 331, 54, 6, 10, 1 },
+	{ 341, 54, 6, 10, 1 },
+	{ 351, 54, 6, 10, 1 },
+	{ 361, 54, 6, 10, 1 },
+	{ 333, 44, 14, 4, 0 },
+	{ 393, 44, 2, 20, 3 },
+	{ 446, 64, 4, 14, 0 },
+	{ 446, 78, 64, 4, 0 },
+	{ 506, 64, 4, 14, 0 },
+	{ 450, 68, 6, 10, 1 },
+	{ 462, 68, 6, 10, 1 },
+	{ 474, 68, 6, 10, 1 },
+	{ 486, 68, 6, 10, 1 },
+	{ 498, 68, 6, 10, 1 },
+	{ 510, 64, 200, 4, 0 },
+	{ 520, 54, 6, 10, 1 },
+	{ 530, 54, 6, 10, 1 },
+	{ 540, 54, 6, 10, 1 },
+	{ 550, 54, 6, 10, 1 },
+	{ 560, 54, 6, 10, 1 },
+	{ 629, 54, 6, 10, 1 },
+	{ 637, 54, 11, 10, 0 },
+	{ 639, 44, 6, 10, 1 },
+	{ 647, 44, 11, 10, 0 },
+	{ 647, 54, 11, 10, 0},
+	{ 649, 34, 6, 10, 1 },
+	{ 657, 54, 11, 10, 0 },
+	{ 659, 44, 6, 10, 1 },
+	{ 669, 54, 6, 10, 1 },
+	{ 690, 39, 10, 25, 2 }
+};
 
 // Pointer to the current level that is being used
-const MapObject*  currentMapData = level2;
+const MapObject*  currentMapData = level1;
 
 void setup() 
 {
@@ -112,7 +177,6 @@ void loop()
 		return;
 	// Remove everything currently drawn to the screen
 	arduboy.clear();
-	
 
 	// Intro
 	if (gameState == 1)
@@ -187,14 +251,23 @@ void loop()
 					&& player.y + 4 >= currentMapData[i].y
 					&& player.y + 4 <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2)
+					switch (currentMapData[i].type)
 					{
-						player.botCol = true;
-					}
-					else
-					{
-						gameState = 3;
-						spawnY = 2;
+						default:
+							player.botCol = true;
+							break;
+						case 2:
+							gameState = 3;
+							spawnY = 2;
+							break;
+						case 3:
+							if (spawnX != currentMapData[i].x)
+							{
+								arduboy.tunes.tone(4000, 100);
+								spawnX = currentMapData[i].x;
+								spawnY = currentMapData[i].y - 12;
+							}
+							break;
 					}
 				}
 				else if (player.x >= currentMapData[i].x
@@ -202,7 +275,7 @@ void loop()
 					&& player.y - 3 >= currentMapData[i].y
 					&& player.y - 3 <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3)
 					{
 						player.topCol = true;
 					}
@@ -212,7 +285,7 @@ void loop()
 					&& player.y >= currentMapData[i].y
 					&& player.y <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3)
 					{
 						player.rightCol = true;
 					}
@@ -222,7 +295,7 @@ void loop()
 					&& player.y >= currentMapData[i].y
 					&& player.y <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3)
 					{
 						player.leftCol = true;
 					}
@@ -259,13 +332,25 @@ void loop()
 		{
 			gameState = 2;
 			spawnY = 32;
-			if (currentLevel == 1)
+
+			switch (currentLevel)
 			{
-				currentLevel = 2;
-				currentLevelArraySize = LEVEL2ARRAYSIZE;
-				currentMapData = level2;
-				player.respawn(spawnX, spawnY);
+				case 1:
+					currentLevelArraySize = LEVEL2ARRAYSIZE;
+					currentMapData = level2;
+					break;
+				case 2:
+					currentLevelArraySize = LEVEL3ARRAYSIZE;
+					currentMapData = level3;
+					break;
+				case 3:
+					currentLevelArraySize = LEVEL4ARRAYSIZE;
+					currentMapData = level4;
+					break;
 			}
+
+			currentLevel++;
+			player.respawn(spawnX, spawnY);
 		}
 		arduboy.tunes.tone(5000, 10);
 	}
@@ -273,8 +358,8 @@ void loop()
 	if (gameState == 2 || gameState == 3)
 	{
 		//// Draw ////
-		arduboy.setCursor(0, 0);
-		arduboy.print(arduboy.cpuLoad());
+		//arduboy.setCursor(0, 0);
+		//arduboy.print(arduboy.cpuLoad());
 		//arduboy.print("X:");
 		//arduboy.print(player.x);
 		//arduboy.print(" Y:");
@@ -289,13 +374,24 @@ void loop()
 				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
 				break;
 			case 1: // Spike
-				arduboy.drawTriangle(currentMapData[i].x - camX, currentMapData[i].y + currentMapData[i].h - camY, currentMapData[i].x + (currentMapData[i].w / 2) - camX, currentMapData[i].y - camY,
-					currentMapData[i].x + currentMapData[i].w - camX, currentMapData[i].y + currentMapData[i].h - camY, 1);
+				arduboy.drawTriangle(currentMapData[i].x - camX - 2, currentMapData[i].y + currentMapData[i].h - camY, currentMapData[i].x + (currentMapData[i].w / 2) - camX, currentMapData[i].y - camY,
+					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y + currentMapData[i].h - camY, 1);
 				break;
 			case 2: // Next Level
 				//arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
 				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
 				arduboy.drawFastVLine(random(currentMapData[i].x - camX, currentMapData[i].x - camX + currentMapData[i].w), currentMapData[i].y - camY, currentMapData[i].h, 1);
+				break;
+			case 3:
+				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+				if (spawnX == currentMapData[i].x)
+				{
+					arduboy.drawRect(currentMapData[i].x - camX + currentMapData[i].w, currentMapData[i].y - camY, 8, 5, 1);
+				}
+				else
+				{
+					//arduboy.drawRect(currentMapData[i].x - camX + currentMapData[i].w, currentMapData[i].y + currentMapData[i].h - 4 - camY, 8, 4, 1);
+				}
 				break;
 			}
 		}
