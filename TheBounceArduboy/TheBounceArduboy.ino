@@ -15,10 +15,14 @@ bool introSelection = 1;
 // If the menu selection was changed the previous frame
 bool introChanged; 
 
+#define LEVEL1ARRAYSIZE		22
+
+#define LEVEL2ARRAYSIZE		13
+
 // The currently used level
-byte currentLevel = 1;
+byte currentLevel = 2;
 // The size of the array for the current level
-byte currentLevelArraySize = 22;
+byte currentLevelArraySize = LEVEL2ARRAYSIZE;
 
 // Position of the camera used for drawing
 short camX;
@@ -42,7 +46,7 @@ struct MapObject
 };
 
 // The levels which are an array holding the MapObject struct for every object in the level
-const MapObject level1[22] =
+const MapObject level1[LEVEL1ARRAYSIZE] =
 {
 	{ 0, 64, 64, 4, 0 },
 	{ 60, 68, 4, 32, 0 },
@@ -67,13 +71,26 @@ const MapObject level1[22] =
 	{ 426, -26, 4, 41, 0 },
 	{ 406, -10, 10, 25, 2 }
 };
-const MapObject level2[1] =
+const MapObject level2[LEVEL2ARRAYSIZE] =
 {
-	{ 0, 64, 64, 4, 0 }
+//	   X    Y   W    H  type
+	{ -84, 64, 148, 4, 0 },
+	{ 64, 28, 4, 40, 0 },
+	{ 0, 28, 64, 4, 0 },
+	{ -32, 28, 32, 14, 0 },
+	{ -64, 28, 32, 20, 0 },
+	{ -96, 28, 32, 24, 0 },
+	{ -192, 128, 108, 4, 0 },
+	{ -84, 68, 4, 64, 0},
+	{ -160, 95, 32, 23, 0},
+	{ -132, 63, 4, 32, 0},
+	{ -192, 64, 4, 64, 0},
+	{ -192, 60, 64, 4, 0},
+	{ -150, 70, 10, 25, 2}
 };
 
 // Pointer to the current level that is being used
-const MapObject*  currentMapData = level1;
+const MapObject*  currentMapData = level2;
 
 void setup() 
 {
@@ -85,7 +102,7 @@ void setup()
 	// Basically setup() for the player but also functions as respawning
 	player.respawn(spawnX, spawnY);
 
-	//arduboy.setRGBled(0, 0, 255); God damn flipped LED Q___Q
+	//arduboy.setRGBled(255, 255, 255); //God damn flipped LED Q___Q
 }
 
 void loop() 
@@ -95,6 +112,7 @@ void loop()
 		return;
 	// Remove everything currently drawn to the screen
 	arduboy.clear();
+	
 
 	// Intro
 	if (gameState == 1)
@@ -244,7 +262,7 @@ void loop()
 			if (currentLevel == 1)
 			{
 				currentLevel = 2;
-				currentLevelArraySize = 1;
+				currentLevelArraySize = LEVEL2ARRAYSIZE;
 				currentMapData = level2;
 				player.respawn(spawnX, spawnY);
 			}
@@ -286,6 +304,11 @@ void loop()
 		{
 			arduboy.drawBitmap(305 - camX, 53 - camY, abButtons, 20, 14, 1);
 			arduboy.fillRect(318 - camX, 55 - camY, 4, 6, 1);
+		}
+		else if (currentLevel == 2) // Draw B button tutorial
+		{
+			arduboy.drawBitmap(-155 - camX, 98 - camY, abButtons, 20, 14, 1);
+			arduboy.fillRect(-152 - camX, 104 - camY, 4, 6, 1);
 		}
 
 		if (gameState == 2)

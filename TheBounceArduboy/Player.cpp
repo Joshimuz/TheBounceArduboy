@@ -25,7 +25,7 @@ void PlayerClass::update(Arduboy& arduboy)
 		{
 			yVelocity = -1;
 		}
-		xVelocity *= 0.8f;
+		xVelocity *= 0.92f;
 	}
 
 	if (arduboy.pressed(A_BUTTON))
@@ -47,14 +47,12 @@ void PlayerClass::update(Arduboy& arduboy)
 	{
 		yVelocity = fabsf(yVelocity) * -1.1f;
 		canJump = true;
-		//y--;
 		botCol = false;
 		arduboy.tunes.tone(400 + (fabsf(yVelocity) * 50), 10);
 	}
 	else if (topCol)
 	{
 		yVelocity = fabsf(yVelocity) * 1.1f;
-		//y++;
 		topCol = false;
 		arduboy.tunes.tone(400 + (fabsf(yVelocity) * 50), 10);
 	}
@@ -63,7 +61,6 @@ void PlayerClass::update(Arduboy& arduboy)
 	{
 		xVelocity = fabsf(xVelocity) * -1.5f;
 		canJump = true;
-		//x--;
 		rightCol = false;
 		arduboy.tunes.tone(400 + (fabsf(xVelocity) * 50), 10);
 	}
@@ -71,7 +68,6 @@ void PlayerClass::update(Arduboy& arduboy)
 	{
 		xVelocity = fabsf(xVelocity) * 1.5f;
 		canJump = true;
-		//x++;
 		leftCol = false;
 		arduboy.tunes.tone(400 + (fabsf(xVelocity) * 50), 10);
 	}
@@ -85,6 +81,15 @@ void PlayerClass::update(Arduboy& arduboy)
 	if (yVelocity >= 2.2f)
 	{
 		yVelocity = 2.2f;
+	}
+
+	if (xVelocity > 3)
+	{
+		xVelocity = 3;
+	}
+	else if (xVelocity < -3)
+	{
+		xVelocity = -3;
 	}
 
 	// Apply Velocity
