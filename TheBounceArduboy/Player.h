@@ -12,9 +12,13 @@ class PlayerClass
 	 float yVelocity;
 
 	 bool canJump;
+	 
  public:
 	float x;
 	float y;
+
+	bool canInteract;
+	byte interactTimer;
 
 	//byte collisions;
 
@@ -25,6 +29,7 @@ class PlayerClass
 
 	void update(Arduboy& arduboy);
 	void respawn(short spawnX, short spawnY);
+	void hitInteractable();
 };
 
 extern PlayerClass player;

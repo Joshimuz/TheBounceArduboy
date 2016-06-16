@@ -25,7 +25,7 @@ void PlayerClass::update(Arduboy& arduboy)
 		{
 			yVelocity = -1;
 		}
-		xVelocity *= 0.92f;
+		xVelocity *= 0.93f;
 	}
 
 	if (arduboy.pressed(A_BUTTON))
@@ -95,6 +95,16 @@ void PlayerClass::update(Arduboy& arduboy)
 	// Apply Velocity
 	y += yVelocity;
 	x += xVelocity;
+
+	if (!canInteract)
+	{
+		interactTimer--;
+
+		if (interactTimer <= 0)
+		{
+			canInteract = true;
+		}
+	}
 }
 void PlayerClass::respawn(short spawnX, short spawnY)
 {
@@ -110,6 +120,15 @@ void PlayerClass::respawn(short spawnX, short spawnY)
 	rightCol = false;
 	topCol = false;
 	botCol = false;
+
+	interactTimer = 0;
+	canInteract = true;
+}
+
+void PlayerClass::hitInteractable()
+{
+	interactTimer = 15;
+	canInteract = false;
 }
 
 PlayerClass player;

@@ -13,5 +13,9 @@ extern const unsigned char configButton[];
 
 extern const unsigned char abButtons[];
 
+extern const unsigned char buttonBase[];
+
+extern const unsigned char menuBall[];
+
 #endif
 

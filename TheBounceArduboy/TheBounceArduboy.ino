@@ -4,7 +4,6 @@
 #include "Sprites.h"
 #include "Player.h"
 #include "Arduboy.h"
-#include <Arduino.h>
 
 Arduboy arduboy;
 
@@ -20,6 +19,7 @@ bool introChanged;
 #define LEVEL2ARRAYSIZE		13
 #define LEVEL3ARRAYSIZE		14
 #define LEVEL4ARRAYSIZE		43
+#define LEVEL5ARRAYSIZE		15
 #define LARGESTARRAYSIZE	43
 
 // The currently used level
@@ -28,24 +28,24 @@ byte currentLevel;
 byte currentLevelArraySize;
 
 // Position of the camera used for drawing
-short camX;
-short camY;
+short camX; short camY;
 
 // The respawn position for the player
-short spawnX = 32;
-short spawnY = 32;
+short spawnX = 32; short spawnY = 32;
 
 // The kill plane at the bottom of the level
 #define MAPFLOOR	300
 
+float menuBallY = -15;
+float menuBallVelo;
+
 // The struct for the objects in the level
 struct MapObject
 {
-	short x;
-	short y;
-	byte w;
-	byte h;
-	byte type; // 0 = block, 1 = spike (w 2 smaller than wanted), 2 = endlevel, 3 = checkpoint (2w20h)
+	short x; short y;
+	byte w; byte h;
+	byte type; // 0 = block, 1 = spike (w 2 smaller than wanted), 2 = endlevel, 3 = checkpoint (2w20h), 4 = Portal One, 5 = Portal Two, 6 = Removal Button, 7 = Add Button
+	// 99 = Pressed Button, 100 = BlockToAdd
 };
 
 // Levels stored in Flash to save RAM, copied to currentMapData when needed
@@ -153,6 +153,19 @@ PROGMEM static const MapObject level4[LEVEL4ARRAYSIZE] =
 	{ 669, 54, 6, 10, 1 },
 	{ 690, 39, 10, 25, 2 }
 };
+PROGMEM static const MapObject level5[LEVEL5ARRAYSIZE] =
+{
+	{ -50, 64, 105, 4, 0 },
+	{ -20, 16, 4, 48, 0},
+	{ -10, 60, 16, 4, 6},
+	{ 51, 16, 4, 48, 0},
+	{ -125, 12, 180, 4, 0 },
+	{ -50, 68, 4, 64, 0},
+	{ -255, 132, 209, 4, 0},
+	{ -155, 68, 4, 64, 0},
+	{ -125, 16, 4, 116, 100},
+	{ -146, 128, 16, 4, 7},
+};
 
 // Copy in RAM of the current level that is being used. Must be at least the size of the largest level
 MapObject currentMapData[LARGESTARRAYSIZE];
@@ -161,6 +174,7 @@ void setup()
 {
 	// Start arduboy stuff
 	arduboy.begin();
+
 	// Framerate to 30 due to console peasntry
 	arduboy.setFrameRate(30);
 
@@ -181,19 +195,36 @@ void loop()
 
 	// Intro
 	if (gameState == 1)
-	{
-			
+	{	
 		if (arduboy.pressed(A_BUTTON))
 		{
-			if (introSelection)
+			if (!introChanged)
 			{
-				// Start the game when PLAY button pressed
-				gameState = 2;
-				// Now that something sudo-random has happened (user input) init the random seed
-				arduboy.initRandomSeed();
+				if (introSelection)
+				{
+					// Start the game when PLAY button pressed
+					gameState = 2;
+					// Now that something sudo-random has happened (user input) init the random seed
+					arduboy.initRandomSeed();
+				}
+				else
+				{
+					if (arduboy.audio.enabled())
+					{
+						arduboy.audio.off();
+					}
+					else
+					{
+						arduboy.audio.on();
+					}
+
+					//arduboy.audio.saveOnOff();
+				}
+
+				introChanged = true;
 			}
 		}
-		if (arduboy.pressed(LEFT_BUTTON) || arduboy.pressed(RIGHT_BUTTON))
+		else if (arduboy.pressed(LEFT_BUTTON) || arduboy.pressed(RIGHT_BUTTON))
 		{
 			// If the selection didn't change last frame
 			if (!introChanged)
@@ -209,18 +240,29 @@ void loop()
 			introChanged = false;
 		}
 
+		menuBallVelo += 0.15f;
+
+		if (menuBallY >= 32)
+		{
+			menuBallVelo = fabsf(menuBallVelo) * -0.95f;
+		}
+		
+		menuBallY += menuBallVelo;
+
 		// Draw the menu
-		arduboy.drawBitmap(0, 0, titleScreen, 128, 42, 1);
+		arduboy.drawBitmap(0, 0, titleScreen, 128, 64, 1);
 		if (introSelection)
 		{
-			arduboy.drawBitmap(12, 48, playButton, 31, 16, 1);
-			arduboy.drawBitmap(85, 52, configButton, 31, 16, 1);
+			arduboy.drawBitmap(15, 47, playButton, 31, 14, 1);
+			arduboy.drawBitmap(82, 49, configButton, 31, 10, 1);
 		}
 		else
 		{
-			arduboy.drawBitmap(12, 52, playButton, 31, 16, 1);
-			arduboy.drawBitmap(85, 48, configButton, 31, 16, 1);
+			arduboy.drawBitmap(15, 49, playButton, 31, 10, 1);
+			arduboy.drawBitmap(82, 47, configButton, 31, 14, 1);
 		}
+
+		arduboy.drawBitmap(29, (int)menuBallY, menuBall, 16, 16, 1);
 	} // Intro
 	// Gameplay
 	else if (gameState == 2)
@@ -269,6 +311,38 @@ void loop()
 								spawnY = currentMapData[i].y - 12;
 							}
 							break;
+						case 4:
+							if (player.canInteract)
+							{
+								player.x = (float)(currentMapData[i + 1].x + currentMapData[i + 1].w / 2);
+								player.y = (float)(currentMapData[i + 1].y + currentMapData[i + 1].h / 2);
+							}
+
+							player.hitInteractable();
+							break;
+						case 5:
+							if (player.canInteract)
+							{
+								player.x = (float)(currentMapData[i - 1].x + currentMapData[i - 1].w / 2);
+								player.y = (float)(currentMapData[i - 1].y + currentMapData[i - 1].h / 2);
+							}
+
+							player.hitInteractable();
+							break;
+						case 6:
+							player.botCol = true;
+							currentMapData[i].type = 99;
+							arduboy.tunes.tone(2000, 100);
+							currentMapData[i - 1] = { 0,0,0,0,0 };
+							break;
+						case 7:
+							player.botCol = true;
+							currentMapData[i].type = 99;
+							arduboy.tunes.tone(2000, 100);
+							currentMapData[i - 1].type -= 100;
+							break;
+						case 100:
+							break;
 					}
 				}
 				else if (player.x >= currentMapData[i].x
@@ -276,7 +350,7 @@ void loop()
 					&& player.y - 3 >= currentMapData[i].y
 					&& player.y - 3 <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2 && currentMapData[i].type != 3)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && currentMapData[i].type != 5 && currentMapData[i].type != 100)
 					{
 						player.topCol = true;
 					}
@@ -286,7 +360,7 @@ void loop()
 					&& player.y >= currentMapData[i].y
 					&& player.y <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2 && currentMapData[i].type != 3)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && currentMapData[i].type != 5 && currentMapData[i].type != 100)
 					{
 						player.rightCol = true;
 					}
@@ -296,7 +370,7 @@ void loop()
 					&& player.y >= currentMapData[i].y
 					&& player.y <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2 && currentMapData[i].type != 3)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && currentMapData[i].type != 5 && currentMapData[i].type != 100)
 					{
 						player.leftCol = true;
 					}
@@ -328,30 +402,19 @@ void loop()
 			player.y--;
 			spawnY += 2;
 		}
+		if (arduboy.everyXFrames(5))
+		{
+			if (currentLevelArraySize > 0)
+			{
+				currentLevelArraySize--;
+			}
+		}
 
 		if (spawnY > 128)
 		{
 			gameState = 2;
-			spawnY = 32;
 
-			switch (currentLevel)
-			{
-				case 1:
-					//currentLevelArraySize = LEVEL2ARRAYSIZE;
-					//currentMapData = level2;
-					CopyLevel(2);
-					break;
-				case 2:
-					//currentLevelArraySize = LEVEL3ARRAYSIZE;
-					//currentMapData = level3;
-					CopyLevel(3);
-					break;
-				case 3:
-					//currentLevelArraySize = LEVEL4ARRAYSIZE;
-					//currentMapData = level4;
-					CopyLevel(4);
-					break;
-			}
+			CopyLevel(currentLevel + 1);
 
 			//currentLevel++;
 			player.respawn(spawnX, spawnY);
@@ -362,14 +425,14 @@ void loop()
 	if (gameState == 2 || gameState == 3)
 	{
 		//// Draw ////
-		//arduboy.setCursor(0, 0);
+		arduboy.setCursor(0, 0);
 		//arduboy.print(arduboy.cpuLoad());
-		//arduboy.print("X:");
-		//arduboy.print(player.x);
-		//arduboy.print(" Y:");
-		//arduboy.print(player.y);
+		arduboy.print("X:");
+		arduboy.print(player.x);
+		arduboy.print(" Y:");
+		arduboy.print(player.y);
 
-		for (short i = 0; i < currentLevelArraySize; i++)
+		for (byte i = 0; i < currentLevelArraySize; i++)
 		{
 			//arduboy.fillRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
 			switch (currentMapData[i].type)
@@ -392,11 +455,33 @@ void loop()
 				{
 					arduboy.drawRect(currentMapData[i].x - camX + currentMapData[i].w, currentMapData[i].y - camY, 8, 5, 1);
 				}
-				else
-				{
-					//arduboy.drawRect(currentMapData[i].x - camX + currentMapData[i].w, currentMapData[i].y + currentMapData[i].h - 4 - camY, 8, 4, 1);
-				}
 				break;
+			case 6:
+				break;
+			case 7:
+				break;
+			case 99:
+				arduboy.drawBitmap(currentMapData[i].x - camX, currentMapData[i].y - camY, buttonBase, 16, 4, 1);
+				break;
+			case 100:
+				break;
+			}
+
+			// Saves Flash if check for duplicate types outside of switch with same if statement
+			if (currentMapData[i].type == 4 || currentMapData[i].type == 5)
+			{
+				arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
+				//arduboy.drawLine(currentMapData[i].x + (currentMapData[i].w / 2) - camX, currentMapData[i].y + (currentMapData[i].h / 2) - camY,
+				//	random(currentMapData[i].x, currentMapData[i].x + currentMapData[i].w) - camX, random(currentMapData[i].y, currentMapData[i].y + currentMapData[i].h) - camY, 1);
+				for (byte z = 0; z < 2; z++)
+				{
+					arduboy.drawPixel(random(currentMapData[i].x + 2, currentMapData[i].x + currentMapData[i].w - 2) - camX, random(currentMapData[i].y + 2, currentMapData[i].y + currentMapData[i].h - 1) - camY, 1);
+				}
+			}
+			else if (currentMapData[i].type == 6 || currentMapData[i].type == 7)
+			{
+				arduboy.drawBitmap(currentMapData[i].x - camX, currentMapData[i].y - camY, buttonBase, 16, 4, 1);
+				arduboy.drawRect(currentMapData[i].x - camX + 4, currentMapData[i].y - camY - 2, 8, 3, 1);
 			}
 		}
 
@@ -425,48 +510,6 @@ void loop()
 
 	arduboy.display();
 }
-
-//void CopyLevel1()
-//{
-//	for (byte i = 0; i < LEVEL1ARRAYSIZE; i++)
-//	{
-//		memcpy_P(&currentMapData[i], &level1[i], sizeof(level1[i]));
-//	}
-//
-//	currentLevelArraySize = LEVEL1ARRAYSIZE;
-//	currentLevel = 1;
-//}
-//void CopyLevel2()
-//{
-//	for (byte i = 0; i < LEVEL2ARRAYSIZE; i++)
-//	{
-//		memcpy_P(&currentMapData[i], &level2[i], sizeof(level1[i]));
-//	}
-//
-//	currentLevelArraySize = LEVEL2ARRAYSIZE;
-//	currentLevel = 2;
-//}
-//void CopyLevel3()
-//{
-//	for (byte i = 0; i < LEVEL3ARRAYSIZE; i++)
-//	{
-//		memcpy_P(&currentMapData[i], &level3[i], sizeof(level1[i]));
-//	}
-//
-//	currentLevelArraySize = LEVEL3ARRAYSIZE;
-//	currentLevel = 3;
-//}
-//void CopyLevel4()
-//{
-//	for (byte i = 0; i < LEVEL4ARRAYSIZE; i++)
-//	{
-//		memcpy_P(&currentMapData[i], &level4[i], sizeof(level1[i]));
-//	}
-//
-//	currentLevelArraySize = LEVEL4ARRAYSIZE;
-//	currentLevel = 4;
-//}
-
 
 void CopyLevel(byte levelNumber)
 {
@@ -499,8 +542,16 @@ void CopyLevel(byte levelNumber)
 			memcpy_P(&currentMapData[i], &level4[i], sizeof(level4[i]));
 		}
 		break;
+	case 5:
+		for (i = 0; i < LEVEL5ARRAYSIZE; i++)
+		{
+			memcpy_P(&currentMapData[i], &level5[i], sizeof(level5[i]));
+		}
+		break;
 	}
 
 	currentLevelArraySize = i;
 	currentLevel = levelNumber;
+	spawnX = 32;
+	spawnY = 32;
 }
