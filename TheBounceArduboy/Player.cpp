@@ -32,7 +32,14 @@ void PlayerClass::update(Arduboy& arduboy)
 	{
 		if (canJump)
 		{
-			yVelocity = -2.5;
+			if (gravity >= 0)
+			{
+				yVelocity = -2.5;
+			}
+			else
+			{
+				yVelocity = 2.5;
+			}
 			canJump = false;
 		}
 
@@ -41,18 +48,25 @@ void PlayerClass::update(Arduboy& arduboy)
 
 	//PhysX
 	// Add gravity
-	yVelocity += 0.15f; 
+	yVelocity += gravity;
 
 	if (botCol)
 	{
 		yVelocity = fabsf(yVelocity) * -1.1f;
-		canJump = true;
+		if (gravity >= 0)
+		{
+			canJump = true;
+		}
 		botCol = false;
 		arduboy.tunes.tone(400 + (fabsf(yVelocity) * 50), 10);
 	}
 	else if (topCol)
 	{
 		yVelocity = fabsf(yVelocity) * 1.1f;
+		if (gravity <= 0)
+		{
+			canJump = true;
+		}
 		topCol = false;
 		arduboy.tunes.tone(400 + (fabsf(yVelocity) * 50), 10);
 	}
@@ -78,18 +92,22 @@ void PlayerClass::update(Arduboy& arduboy)
 	xVelocity *= 0.98f;
 
 	// Limit speed
-	if (yVelocity >= 2.2f)
+	if (yVelocity >= 2.2f && gravity >= 0)
 	{
 		yVelocity = 2.2f;
 	}
-
-	if (xVelocity > 3)
+	else if (yVelocity <= -2.2f && gravity <= 0)
 	{
-		xVelocity = 3;
+		yVelocity = -2.2f;
 	}
-	else if (xVelocity < -3)
+
+	if (xVelocity > 4)
 	{
-		xVelocity = -3;
+		xVelocity = 4;
+	}
+	else if (xVelocity < -4)
+	{
+		xVelocity = -4;
 	}
 
 	// Apply Velocity

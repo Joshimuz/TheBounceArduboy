@@ -1,6 +1,5 @@
 // Joshimuz 2016
 
-#include "Maps.h"
 #include "Sprites.h"
 #include "Player.h"
 #include "Arduboy.h"
@@ -18,9 +17,11 @@ bool introChanged;
 #define LEVEL1ARRAYSIZE		22
 #define LEVEL2ARRAYSIZE		13
 #define LEVEL3ARRAYSIZE		14
-#define LEVEL4ARRAYSIZE		43
-#define LEVEL5ARRAYSIZE		15
-#define LARGESTARRAYSIZE	43
+#define LEVEL4ARRAYSIZE		35
+#define LEVEL5ARRAYSIZE		47
+#define LEVEL6ARRAYSIZE		24
+#define LEVEL7ARRAYSIZE		24
+#define LARGESTARRAYSIZE	47
 
 // The currently used level
 byte currentLevel;
@@ -31,10 +32,11 @@ byte currentLevelArraySize;
 short camX; short camY;
 
 // The respawn position for the player
-short spawnX = 32; short spawnY = 32;
+short spawnX; short spawnY;
 
 // The kill plane at the bottom of the level
-#define MAPFLOOR	300
+#define MAPFLOOR			300
+#define MAPCEILING			-300
 
 float menuBallY = -15;
 float menuBallVelo;
@@ -44,7 +46,8 @@ struct MapObject
 {
 	short x; short y;
 	byte w; byte h;
-	byte type; // 0 = block, 1 = spike (w 2 smaller than wanted), 2 = endlevel, 3 = checkpoint (2w20h), 4 = Portal One, 5 = Portal Two, 6 = Removal Button, 7 = Add Button
+	byte type; // 0 = block, 1 = spike(6w10h), 2 = endlevel(10w25h), 3 = checkpoint(2w20h), 4 = Portal One, 5 = Portal Two, 6 = Removal Button(16w4h), 7 = Add Button, 8 = Gravity Button
+	// 11 = Upsidedown Spike, 15 = 5 spikes(46w10h), 16 = 5 upsidedown spikes
 	// 99 = Pressed Button, 100 = BlockToAdd
 };
 
@@ -120,11 +123,7 @@ PROGMEM static const MapObject level4[LEVEL4ARRAYSIZE] =
 	{ 247, 54, 6, 10, 1},
 	{ 257, 54, 6, 10, 1 },
 	{ 254, 64, 192, 4, 0},
-	{ 311, 54, 6, 10, 1},
-	{ 321, 54, 6, 10, 1 },
-	{ 331, 54, 6, 10, 1 },
-	{ 341, 54, 6, 10, 1 },
-	{ 351, 54, 6, 10, 1 },
+	{ 311, 54, 46, 10, 15},
 	{ 361, 54, 6, 10, 1 },
 	{ 333, 44, 14, 4, 0 },
 	{ 393, 44, 2, 20, 3 },
@@ -137,11 +136,7 @@ PROGMEM static const MapObject level4[LEVEL4ARRAYSIZE] =
 	{ 486, 68, 6, 10, 1 },
 	{ 498, 68, 6, 10, 1 },
 	{ 510, 64, 200, 4, 0 },
-	{ 520, 54, 6, 10, 1 },
-	{ 530, 54, 6, 10, 1 },
-	{ 540, 54, 6, 10, 1 },
-	{ 550, 54, 6, 10, 1 },
-	{ 560, 54, 6, 10, 1 },
+	{ 520, 54, 46, 10, 15 },
 	{ 629, 54, 6, 10, 1 },
 	{ 637, 54, 11, 10, 0 },
 	{ 639, 44, 6, 10, 1 },
@@ -155,16 +150,87 @@ PROGMEM static const MapObject level4[LEVEL4ARRAYSIZE] =
 };
 PROGMEM static const MapObject level5[LEVEL5ARRAYSIZE] =
 {
+	{ 0, 64, 255, 4, 0 },
+	{ 0, 0, 255, 4, 0 },
+	{ 0, 4, 4, 60, 0},
+	{ 64, 8, 6, 10, 11 },
+	{ 64, 49, 6, 10, 1 },
+	{ 62, 4, 11, 4, 0 },
+	{ 62, 60, 11, 4, 0 },
+	{ 128, 12, 6, 10, 11 },
+	{ 128, 45, 6, 10, 1 },
+	{ 126, 4, 11, 8, 0 },
+	{ 126, 56, 11, 8, 0 },
+	{ 192, 8, 6, 10, 11 },
+	{ 192, 41, 6, 10, 1 },
+	{ 190, 4, 11, 4, 0 },
+	{ 190, 52, 11, 12, 0 },
+	{ 240, 44, 2, 20, 3 },
+	{ 290, 64, 20, 4, 0},
+	{ 320, 8, 6, 10, 11 },
+	{ 320, 49, 6, 10, 1 },
+	{ 330, 8, 6, 10, 11 },
+	{ 330, 49, 6, 10, 1 },
+	{ 350, 44, 20, 4, 0 },
+	{ 380, -12, 6, 10, 11 },
+	{ 380, 29, 6, 10, 1 },
+	{ 390, -12, 6, 10, 11 },
+	{ 390, 29, 6, 10, 1 },
+	{ 410, 175, 130, 4, 0},
+	{ 500, 155, 2, 20, 3 },
+	{ 510, 130, 160, 4, 0},
+	{ 510, 190, 160, 4, 0 },
+	{ 512, 180, 46, 10, 15},
+	{ 512, 134, 46, 10, 16},
+	{ 562, 180, 46, 10, 15 },
+	{ 562, 134, 46, 10, 16 },
+	{ 612, 180, 46, 10, 15 },
+	{ 612, 134, 46, 10, 16 },
+	{ 662, 180, 6, 10, 1 },
+	{ 662, 134, 6, 10, 11 },
+	{ 557, 160, 30, 4, 0 },
+	{ 600, 175, 30, 4, 0 },
+	{ 635, 155, 30, 4, 0 },
+	{ 660, 175, 96, 4, 0 },
+	{ 700, 155, 2, 20, 3 },
+	{ 775, 155, 6, 10, 11 },
+	{ 773, 105, 11, 50, 0 },
+	{ 800, 175, 30, 4, 0 },
+	{ 815, 150, 10, 25, 2}
+};
+PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
+{
 	{ -50, 64, 105, 4, 0 },
-	{ -20, 16, 4, 48, 0},
-	{ -10, 60, 16, 4, 6},
-	{ 51, 16, 4, 48, 0},
+	{ -20, 16, 4, 48, 0 },
+	{ -10, 60, 16, 4, 6 },
+	{ 51, 16, 4, 48, 0 },
 	{ -125, 12, 180, 4, 0 },
-	{ -50, 68, 4, 64, 0},
-	{ -255, 132, 209, 4, 0},
-	{ -155, 68, 4, 64, 0},
-	{ -125, 16, 4, 116, 100},
-	{ -146, 128, 16, 4, 7},
+	{ -50, 68, 4, 64, 0 },
+	{ -255, 132, 209, 4, 0 },
+	{ -155, 68, 4, 64, 0 },
+	{ -125, 16, 4, 116, 100 },
+	{ -146, 128, 16, 4, 7 },
+	{ -225, 0, 4, 74, 0},
+	{ -285, 68, 4, 64, 0 },
+	{ -255, 128, 16, 4, 106},
+	{ -275, 128, 16, 4, 7},
+	{ -510, 132, 255, 4, 0},
+	{ -417, 107, 10, 25, 102 },
+	{ -460, 104, 16, 4, 107 },
+	{ -340, 80, 16, 4, 107 },
+	{ -500, 116, 16, 4, 107 },
+	{ -420, 92, 16, 4, 107 },
+	{ -380, 104, 16, 4, 107 },
+	{ -500, 80, 16, 4, 107 },
+	{ -340, 116, 16, 4, 7},
+	{ -510, 0, 4, 132, 0}
+};
+PROGMEM static const MapObject level7[LEVEL7ARRAYSIZE] =
+{
+	{ 0, 64, 255, 4, 0 },
+	{ 64, 60, 16, 4, 8 },
+	{ 0, 0, 255, 4, 0 },
+	{ 96, 4, 16, 4, 8 },
 };
 
 // Copy in RAM of the current level that is being used. Must be at least the size of the largest level
@@ -173,16 +239,18 @@ MapObject currentMapData[LARGESTARRAYSIZE];
 void setup() 
 {
 	// Start arduboy stuff
-	arduboy.begin();
+	arduboy.beginNoLogo();
 
 	// Framerate to 30 due to console peasntry
 	arduboy.setFrameRate(30);
+
+	LoadLevel(1);
 
 	// Basically setup() for the player but also functions as respawning
 	player.respawn(spawnX, spawnY);
 
 	//arduboy.setRGBled(255, 255, 255); //God damn flipped LED Q___Q
-	CopyLevel(1);
+
 }
 
 void loop() 
@@ -217,8 +285,6 @@ void loop()
 					{
 						arduboy.audio.on();
 					}
-
-					//arduboy.audio.saveOnOff();
 				}
 
 				introChanged = true;
@@ -244,7 +310,7 @@ void loop()
 
 		if (menuBallY >= 32)
 		{
-			menuBallVelo = fabsf(menuBallVelo) * -0.95f;
+			menuBallVelo = fabsf(menuBallVelo) * -0.94f;
 		}
 		
 		menuBallY += menuBallVelo;
@@ -276,6 +342,10 @@ void loop()
 		player.update(arduboy);
 
 		if (player.y > MAPFLOOR)
+		{
+			player.respawn(spawnX, spawnY);
+		}
+		else if (player.y < MAPCEILING)
 		{
 			player.respawn(spawnX, spawnY);
 		}
@@ -341,6 +411,15 @@ void loop()
 							arduboy.tunes.tone(2000, 100);
 							currentMapData[i - 1].type -= 100;
 							break;
+						case 8:
+							player.botCol = true;
+							if (player.canInteract && player.gravity >= 0)
+							{
+								player.gravity *= -1;
+								arduboy.tunes.tone(2000, 100);
+							}
+							player.hitInteractable();
+							break;
 						case 100:
 							break;
 					}
@@ -353,6 +432,15 @@ void loop()
 					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && currentMapData[i].type != 5 && currentMapData[i].type != 100)
 					{
 						player.topCol = true;
+					}
+					if (currentMapData[i].type == 8)
+					{
+						if (player.canInteract && player.gravity <= 0)
+						{
+							player.gravity *= -1;
+							arduboy.tunes.tone(2000, 100);
+						}
+						player.hitInteractable();
 					}
 				}
 				if (player.x + 3 >= currentMapData[i].x
@@ -378,14 +466,22 @@ void loop()
 
 				if (player.topCol || player.botCol || player.leftCol || player.rightCol)
 				{
-					switch (currentMapData[i].type)
-					{
-					default:
-						break;
+					//switch (currentMapData[i].type)
+					//{
+					//default:
+					//	break;
 
-					case 1: // Spike
+					//case 1: // Spike
+					//	player.respawn(spawnX, spawnY);
+					//	break;
+					//case 11: // Upsidedown Spike
+					//	player.respawn(spawnX, spawnY);
+					//	break;
+					//}
+
+					if (currentMapData[i].type == 1 || currentMapData[i].type == 11 || currentMapData[i].type == 15 || currentMapData[i].type == 16)
+					{
 						player.respawn(spawnX, spawnY);
-						break;
 					}
 				}
 			}
@@ -414,7 +510,7 @@ void loop()
 		{
 			gameState = 2;
 
-			CopyLevel(currentLevel + 1);
+			LoadLevel(currentLevel + 1);
 
 			//currentLevel++;
 			player.respawn(spawnX, spawnY);
@@ -425,12 +521,12 @@ void loop()
 	if (gameState == 2 || gameState == 3)
 	{
 		//// Draw ////
-		arduboy.setCursor(0, 0);
+		//arduboy.setCursor(0, 0);
 		//arduboy.print(arduboy.cpuLoad());
-		arduboy.print("X:");
-		arduboy.print(player.x);
-		arduboy.print(" Y:");
-		arduboy.print(player.y);
+		//arduboy.print("X:");
+		//arduboy.print(player.x);
+		//arduboy.print(" Y:");
+		//arduboy.print(player.y);
 
 		for (byte i = 0; i < currentLevelArraySize; i++)
 		{
@@ -459,6 +555,36 @@ void loop()
 			case 6:
 				break;
 			case 7:
+				break;
+			case 8:
+				if (player.gravity >= 0)
+				{
+					arduboy.drawRect(currentMapData[i].x - camX + 4, currentMapData[i].y - camY - 2, 8, 3, 1);
+				}
+				else
+				{
+					arduboy.drawRect(currentMapData[i].x - camX + 4, currentMapData[i].y - camY + 3, 8, 3, 1);
+				}
+
+				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, 16, 4, 1);
+				break;
+			case 11: // Upsidedown Spike
+				arduboy.drawTriangle(currentMapData[i].x - camX - 2, currentMapData[i].y - camY, currentMapData[i].x + (currentMapData[i].w / 2) - camX, currentMapData[i].y + currentMapData[i].h - camY,
+					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y - camY, 1);
+				break;
+			case 15: // 5 Spikes
+				for (byte z = 0; z < 5; z++)
+				{
+					arduboy.drawTriangle(currentMapData[i].x - camX - 2 + (z * 10), currentMapData[i].y + currentMapData[i].h - camY, currentMapData[i].x + 3 - camX + (z * 10), currentMapData[i].y - camY,
+						currentMapData[i].x + 8 - camX + (z * 10), currentMapData[i].y + currentMapData[i].h - camY, 1);
+				}
+				break;
+			case 16: // 5 Upsidedown Spikes
+				for (byte z = 0; z < 5; z++)
+				{
+					arduboy.drawTriangle(currentMapData[i].x - camX - 2 + (z * 10), currentMapData[i].y - camY, currentMapData[i].x + 3 - camX + (z * 10), currentMapData[i].y + currentMapData[i].h - camY,
+						currentMapData[i].x + 8 - camX + (z * 10), currentMapData[i].y - camY, 1);
+				}
 				break;
 			case 99:
 				arduboy.drawBitmap(currentMapData[i].x - camX, currentMapData[i].y - camY, buttonBase, 16, 4, 1);
@@ -511,7 +637,7 @@ void loop()
 	arduboy.display();
 }
 
-void CopyLevel(byte levelNumber)
+void LoadLevel(byte levelNumber)
 {
 	byte i;
 
@@ -546,6 +672,18 @@ void CopyLevel(byte levelNumber)
 		for (i = 0; i < LEVEL5ARRAYSIZE; i++)
 		{
 			memcpy_P(&currentMapData[i], &level5[i], sizeof(level5[i]));
+		}
+		break;
+	case 6:
+		for (i = 0; i < LEVEL6ARRAYSIZE; i++)
+		{
+			memcpy_P(&currentMapData[i], &level6[i], sizeof(level6[i]));
+		}
+		break;
+	case 7:
+		for (i = 0; i < LEVEL7ARRAYSIZE; i++)
+		{
+			memcpy_P(&currentMapData[i], &level7[i], sizeof(level7[i]));
 		}
 		break;
 	}

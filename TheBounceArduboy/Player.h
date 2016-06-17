@@ -17,6 +17,8 @@ class PlayerClass
 	float x;
 	float y;
 
+	float gravity = 0.15f;
+
 	bool canInteract;
 	byte interactTimer;
 
