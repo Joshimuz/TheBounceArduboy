@@ -20,8 +20,8 @@ bool introChanged;
 #define LEVEL4ARRAYSIZE		35
 #define LEVEL5ARRAYSIZE		47
 #define LEVEL6ARRAYSIZE		24
-#define LEVEL7ARRAYSIZE		24
-#define LARGESTARRAYSIZE	47
+#define LEVEL7ARRAYSIZE		55
+#define LARGESTARRAYSIZE	55
 
 // The currently used level
 byte currentLevel;
@@ -46,9 +46,9 @@ struct MapObject
 {
 	short x; short y;
 	byte w; byte h;
-	byte type; // 0 = block, 1 = spike(6w10h), 2 = endlevel(10w25h), 3 = checkpoint(2w20h), 4 = Portal One, 5 = Portal Two, 6 = Removal Button(16w4h), 7 = Add Button, 8 = Gravity Button
-	// 11 = Upsidedown Spike, 15 = 5 spikes(46w10h), 16 = 5 upsidedown spikes
-	// 99 = Pressed Button, 100 = BlockToAdd
+	byte type;	// 0 = block, 1 = spike(6w10h), 2 = endlevel(10w25h), 3 = checkpoint(2w20h), 4 = Portal One, 5 = Portal Two, 6 = Removal Button(16w4h), 7 = Add Button, 8 = Gravity Button
+				// 11 = Upsidedown Spike, 15 = 5 spikes(46w10h), 16 = 5 upsidedown spikes
+				// 99 = Pressed Button, 100 = BlockToAdd
 };
 
 // Levels stored in Flash to save RAM, copied to currentMapData when needed
@@ -95,18 +95,18 @@ PROGMEM static const MapObject level2[LEVEL2ARRAYSIZE] =
 };
 PROGMEM static const MapObject level3[LEVEL3ARRAYSIZE] =
 {
-	{ 0, 64, 192, 4, 0 },
+	{ 0, 64, 224, 4, 0 },
 	{ 64, 40, 32, 4, 0 },
 	{ 96, 16, 30, 4, 0 },
 	{ 128, -12, 28, 4, 0 },
-	{ 160, -36, 192, 4, 0 },
-	{ 224, -60, 16, 4, 0 },
-	{ 256, -84, 14, 4, 0 },
-	{ 288, -108, 12, 4, 0 },
-	{ 320, -132, 96, 4, 0 },
-	{ 352, -156, 16, 4, 0 },
-	{ 384, -180, 14, 4, 0 },
-	{ 352, -204, 12, 4, 0 },
+	{ 160, -36, 224, 4, 0 },
+	{ 224, -60, 20, 4, 0 },
+	{ 256, -84, 18, 4, 0 },
+	{ 288, -108, 16, 4, 0 },
+	{ 320, -132, 128, 4, 0 },
+	{ 352, -156, 20, 4, 0 },
+	{ 384, -180, 18, 4, 0 },
+	{ 352, -204, 16, 4, 0 },
 	{ 384, -228, 64, 4, 0 },
 	{ 410, -253, 10, 25, 2 }
 };
@@ -227,10 +227,58 @@ PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
 };
 PROGMEM static const MapObject level7[LEVEL7ARRAYSIZE] =
 {
+	{ 48, -20, 10, 20, 2 },
+	{ 40, 0, 24, 4, 0 },
+	{ 0, -24, 64, 4, 0 },
 	{ 0, 64, 255, 4, 0 },
-	{ 64, 60, 16, 4, 8 },
-	{ 0, 0, 255, 4, 0 },
-	{ 96, 4, 16, 4, 8 },
+	{ 0, -64, 4, 128, 0 },
+	{ 64, -96, 4, 128, 0 },
+	{ 128, -28, 4, 92, 0 },
+	{ 255, 64, 255, 4, 0 },
+	{ 98, 32, 30, 4, 0 },
+	{ 118, 21, 6, 10, 1 },
+	{ 114, 36, 6, 10, 11 },
+	{ 68, 0, 30, 4, 0 },
+	{ 71, -11, 6, 10, 1 },
+	{ 75, 4, 6, 10, 11 },
+	{ 98, -32, 188, 4, 0 },
+	{ 120, -52, 20, 20, 0 },
+	{ 72, -68, 16, 4, 6 },
+	{ 114, -28, 6, 10, 11 },
+	{ 68, -64, 30, 4, 0 },
+	{ 64, -100, 68, 4, 0 },
+	{ 128, -96, 4, 44, 0 },
+	{ 256, -28, 4, 72, 0 },
+	{ 132, -56, 32, 4, 0 },
+	{ 164, -88, 4, 36, 0 },
+	{ 168, -88, 88, 4, 0 },
+	{ 170, -84, 6, 10, 11 },
+	{ 180, -84, 6, 10, 11 },
+	{ 203, -43, 6, 10, 1 },
+	{ 213, -43, 6, 10, 1 },
+	{ 236, -84, 6, 10, 11 },
+	{ 246, -84, 6, 10, 11 },
+	{ 256, -88, 4, 32, 0 },
+	{ 260, -60, 64, 4, 0 },
+	{ 324, -90, 4, 98, 0 },
+	{ 315, -56, 6, 10, 11 },
+	{ 277, -28, 6, 10, 11 },
+	{ 294, 8, 70, 4, 0 },
+	{ 296, 12, 6, 10, 11 },
+	{ 356, 44, 20, 20, 0 },
+	{ 140, 60, 16, 4, 6 },
+	{ 324, 44, 2, 20, 3 },
+	{ 364, -60, 4, 104, 0 },
+	{ 192, 8, 4, 56, 0 },
+	{ 191, -3, 6, 10, 1 },
+	{ 196, 40, 30, 4, 0 },
+	{ 162, 40, 30, 4, 0 },
+	{ 226, 8, 30, 4, 0 },
+	{ 132, 8, 30, 4, 0 },
+	{ 394, -90, 4, 154, 0 },
+	{ 328, -90, 66, 4, 0 },
+	{ 338, 4, 16, 4, 8 },
+	{ 90, -84, 2, 20, 3 },
 };
 
 // Copy in RAM of the current level that is being used. Must be at least the size of the largest level
@@ -248,9 +296,9 @@ void setup()
 
 	// Basically setup() for the player but also functions as respawning
 	player.respawn(spawnX, spawnY);
+	//player.respawn(250, -50);
 
 	//arduboy.setRGBled(255, 255, 255); //God damn flipped LED Q___Q
-
 }
 
 void loop() 
@@ -280,10 +328,12 @@ void loop()
 					if (arduboy.audio.enabled())
 					{
 						arduboy.audio.off();
+						arduboy.audio.saveOnOff();
 					}
 					else
 					{
 						arduboy.audio.on();
+						arduboy.audio.saveOnOff();
 					}
 				}
 
@@ -523,9 +573,8 @@ void loop()
 		//// Draw ////
 		//arduboy.setCursor(0, 0);
 		//arduboy.print(arduboy.cpuLoad());
-		//arduboy.print("X:");
 		//arduboy.print(player.x);
-		//arduboy.print(" Y:");
+		//arduboy.print(" ");
 		//arduboy.print(player.y);
 
 		for (byte i = 0; i < currentLevelArraySize; i++)
@@ -565,7 +614,7 @@ void loop()
 				{
 					arduboy.drawRect(currentMapData[i].x - camX + 4, currentMapData[i].y - camY + 3, 8, 3, 1);
 				}
-
+				
 				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, 16, 4, 1);
 				break;
 			case 11: // Upsidedown Spike
@@ -692,4 +741,5 @@ void LoadLevel(byte levelNumber)
 	currentLevel = levelNumber;
 	spawnX = 32;
 	spawnY = 32;
+	player.gravity = DEFAULTGRAVITY;
 }

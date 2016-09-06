@@ -5,6 +5,8 @@
 
 #include "Arduboy.h"
 
+#define	DEFAULTGRAVITY		0.15f
+
 class PlayerClass
 {
  protected:
@@ -17,7 +19,7 @@ class PlayerClass
 	float x;
 	float y;
 
-	float gravity = 0.15f;
+	float gravity = DEFAULTGRAVITY;
 
 	bool canInteract;
 	byte interactTimer;
