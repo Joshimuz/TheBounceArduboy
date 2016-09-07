@@ -17,11 +17,12 @@ bool introChanged;
 #define LEVEL1ARRAYSIZE		22
 #define LEVEL2ARRAYSIZE		13
 #define LEVEL3ARRAYSIZE		14
-#define LEVEL4ARRAYSIZE		35
-#define LEVEL5ARRAYSIZE		47
-#define LEVEL6ARRAYSIZE		24
-#define LEVEL7ARRAYSIZE		55
-#define LARGESTARRAYSIZE	55
+#define LEVEL4ARRAYSIZE		18
+#define LEVEL5ARRAYSIZE		35
+#define LEVEL6ARRAYSIZE		47
+#define LEVEL7ARRAYSIZE		24
+#define LEVEL8ARRAYSIZE		52
+#define LARGESTARRAYSIZE	52
 
 // The currently used level
 byte currentLevel;
@@ -113,6 +114,27 @@ PROGMEM static const MapObject level3[LEVEL3ARRAYSIZE] =
 PROGMEM static const MapObject level4[LEVEL4ARRAYSIZE] =
 {
 	{ 0, 64, 255, 4, 0 },
+	{ -4, -32, 4, 100, 0 },
+	{ 64, 49, 15, 15, 0 },
+	{ 96, -32, 15, 81, 0 },
+	{ 160, 44, 20, 20, 0 },
+	{ 192, -32, 15, 86, 0 },
+	{ 254, 44, 2, 20, 3 },
+	{ 255, 64, 255, 4, 0 },
+	{ 300, 53, 6, 10, 1 },
+	{ 326, -32, 11, 80, 0 },
+	{ 364, 49, 15, 15, 0 },
+	{ 392, 38, 6, 10, 11 },
+	{ 390, -32, 11, 70, 0 },
+	{ 428, 53, 6, 10, 1 },
+	{ 456, 38, 6, 10, 11 },
+	{ 454, -32, 11, 70, 0 },
+	{ 490, 39, 10, 25, 2 },
+	{ 510, -32, 4, 100, 0 }
+};
+PROGMEM static const MapObject level5[LEVEL5ARRAYSIZE] =
+{
+	{ 0, 64, 255, 4, 0 },
 	{ 0, 0, 4, 64, 0 },
 	{ 64, 54, 6, 10, 1},
 	{ 128, 54, 6, 10, 1},
@@ -148,7 +170,7 @@ PROGMEM static const MapObject level4[LEVEL4ARRAYSIZE] =
 	{ 669, 54, 6, 10, 1 },
 	{ 690, 39, 10, 25, 2 }
 };
-PROGMEM static const MapObject level5[LEVEL5ARRAYSIZE] =
+PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
 {
 	{ 0, 64, 255, 4, 0 },
 	{ 0, 0, 255, 4, 0 },
@@ -198,7 +220,7 @@ PROGMEM static const MapObject level5[LEVEL5ARRAYSIZE] =
 	{ 800, 175, 30, 4, 0 },
 	{ 815, 150, 10, 25, 2}
 };
-PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
+PROGMEM static const MapObject level7[LEVEL7ARRAYSIZE] =
 {
 	{ -50, 64, 105, 4, 0 },
 	{ -20, 16, 4, 48, 0 },
@@ -225,7 +247,7 @@ PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
 	{ -340, 116, 16, 4, 7},
 	{ -510, 0, 4, 132, 0}
 };
-PROGMEM static const MapObject level7[LEVEL7ARRAYSIZE] =
+PROGMEM static const MapObject level8[LEVEL8ARRAYSIZE] =
 {
 	{ 48, -20, 10, 20, 2 },
 	{ 40, 0, 24, 4, 0 },
@@ -296,7 +318,6 @@ void setup()
 
 	// Basically setup() for the player but also functions as respawning
 	player.respawn(spawnX, spawnY);
-	//player.respawn(250, -50);
 
 	//arduboy.setRGBled(255, 255, 255); //God damn flipped LED Q___Q
 }
@@ -733,6 +754,12 @@ void LoadLevel(byte levelNumber)
 		for (i = 0; i < LEVEL7ARRAYSIZE; i++)
 		{
 			memcpy_P(&currentMapData[i], &level7[i], sizeof(level7[i]));
+		}
+		break;
+	case 8:
+		for (i = 0; i < LEVEL8ARRAYSIZE; i++)
+		{
+			memcpy_P(&currentMapData[i], &level8[i], sizeof(level8[i]));
 		}
 		break;
 	}
