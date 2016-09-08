@@ -49,8 +49,8 @@ struct MapObject
 {
 	short x; short y;
 	byte w; byte h;
-	byte type;	// 0 = block, 1 = spike(6w10h), 2 = endlevel(10w25h), 3 = checkpoint(2w20h), 4 = Portal One, 5 = Portal Two, 6 = Removal Button(16w4h), 7 = Add Button, 8 = Gravity Button
-				// 11 = Upsidedown Spike, 15 = 5 spikes(46w10h), 16 = 5 upsidedown spikes
+	byte type;	// 0 = block, 1 = spike(4w8h), 2 = endlevel(10w25h), 3 = checkpoint(2w20h), 4 = Portal One, 5 = Portal Two, 6 = Removal Button(16w4h), 7 = Add Button, 8 = Gravity Button
+				// 11 = Upsidedown Spike, 15 = 5 spikes(44w8h), 16 = 5 upsidedown spikes
 				// 99 = Pressed Button, 100 = BlockToAdd
 };
 
@@ -123,13 +123,13 @@ PROGMEM static const MapObject level4[LEVEL4ARRAYSIZE] =
 	{ 192, -32, 15, 86, 0 },
 	{ 254, 44, 2, 20, 3 },
 	{ 255, 64, 255, 4, 0 },
-	{ 300, 53, 6, 10, 1 },
+	{ 302, 55, 4, 8, 1 },
 	{ 326, -32, 11, 80, 0 },
 	{ 364, 49, 15, 15, 0 },
-	{ 392, 38, 6, 10, 11 },
+	{ 394, 38, 4, 8, 11 },
 	{ 390, -32, 11, 70, 0 },
-	{ 428, 53, 6, 10, 1 },
-	{ 456, 38, 6, 10, 11 },
+	{ 430, 55, 4, 8, 1 },
+	{ 458, 38, 4, 8, 11 },
 	{ 454, -32, 11, 70, 0 },
 	{ 490, 39, 10, 25, 2 },
 	{ 510, -32, 4, 100, 0 }
@@ -138,38 +138,38 @@ PROGMEM static const MapObject level5[LEVEL5ARRAYSIZE] =
 {
 	{ 0, 64, 255, 4, 0 },
 	{ 0, 0, 4, 64, 0 },
-	{ 64, 54, 6, 10, 1},
-	{ 128, 54, 6, 10, 1},
-	{ 138, 54, 6, 10, 1},
-	{ 148, 54, 6, 10, 1},
-	{ 212, 54, 6, 10, 1},
-	{ 222, 54, 6, 10, 1 },
-	{ 247, 54, 6, 10, 1},
-	{ 257, 54, 6, 10, 1 },
+	{ 66, 56, 4, 8, 1},
+	{ 130, 56, 4, 8, 1},
+	{ 140, 56, 4, 8, 1 },
+	{ 150, 56, 4, 8, 1 },
+	{ 214, 56, 4, 8, 1 },
+	{ 224, 56, 4, 8, 1 },
+	{ 249, 56, 4, 8, 1 },
+	{ 259, 56, 4, 8, 1 },
 	{ 254, 64, 192, 4, 0},
-	{ 311, 54, 46, 10, 15},
-	{ 361, 54, 6, 10, 1 },
+	{ 313, 56, 44, 8, 15},
+	{ 363, 56, 4, 8, 1 },
 	{ 333, 44, 14, 4, 0 },
 	{ 393, 44, 2, 20, 3 },
 	{ 446, 64, 4, 14, 0 },
 	{ 446, 78, 64, 4, 0 },
 	{ 506, 64, 4, 14, 0 },
-	{ 450, 68, 6, 10, 1 },
-	{ 462, 68, 6, 10, 1 },
-	{ 474, 68, 6, 10, 1 },
-	{ 486, 68, 6, 10, 1 },
-	{ 498, 68, 6, 10, 1 },
+	{ 452, 70, 4, 8, 1 },
+	{ 464, 70, 4, 8, 1 },
+	{ 476, 70, 4, 8, 1 },
+	{ 488, 70, 4, 8, 1 },
+	{ 500, 70, 4, 8, 1 },
 	{ 510, 64, 200, 4, 0 },
-	{ 520, 54, 46, 10, 15 },
-	{ 629, 54, 6, 10, 1 },
+	{ 522, 56, 44, 8, 15 },
+	{ 631, 56, 4, 8, 1 },
 	{ 637, 54, 11, 10, 0 },
-	{ 639, 44, 6, 10, 1 },
+	{ 641, 46, 4, 8, 1 },
 	{ 647, 44, 11, 10, 0 },
 	{ 647, 54, 11, 10, 0},
-	{ 649, 34, 6, 10, 1 },
+	{ 651, 36, 4, 8, 1 },
 	{ 657, 54, 11, 10, 0 },
-	{ 659, 44, 6, 10, 1 },
-	{ 669, 54, 6, 10, 1 },
+	{ 661, 46, 4, 8, 1 },
+	{ 671, 56, 4, 8, 1 },
 	{ 690, 39, 10, 25, 2 }
 };
 PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
@@ -177,47 +177,47 @@ PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
 	{ 0, 64, 255, 4, 0 },
 	{ 0, 0, 255, 4, 0 },
 	{ 0, 4, 4, 60, 0 },
-	{ 64, 8, 6, 10, 11 },
-	{ 64, 49, 6, 10, 1 },
+	{ 66, 8, 4, 8, 11 },
+	{ 66, 51, 4, 8, 1 },
 	{ 62, 4, 11, 4, 0 },
 	{ 62, 60, 11, 4, 0 },
-	{ 128, 12, 6, 10, 11 },
-	{ 128, 45, 6, 10, 1 },
+	{ 130, 12, 4, 8, 11 },
+	{ 130, 47, 4, 8, 1 },
 	{ 126, 4, 11, 8, 0 },
 	{ 126, 56, 11, 8, 0 },
-	{ 192, 8, 6, 10, 11 },
-	{ 192, 41, 6, 10, 1 },
+	{ 194, 8, 4, 8, 11 },
+	{ 194, 43, 4, 8, 1 },
 	{ 190, 4, 11, 4, 0 },
 	{ 190, 52, 11, 12, 0 },
 	{ 240, 44, 2, 20, 3 },
 	{ 290, 64, 20, 4, 0 },
-	{ 320, 8, 6, 10, 11 },
-	{ 320, 49, 6, 10, 1 },
-	{ 330, 8, 6, 10, 11 },
-	{ 330, 49, 6, 10, 1 },
+	{ 322, 8, 4, 8, 11 },
+	{ 322, 51, 4, 8, 1 },
+	{ 332, 8, 4, 8, 11 },
+	{ 332, 51, 4, 8, 1 },
 	{ 350, 44, 20, 4, 0 },
-	{ 380, -12, 6, 10, 11 },
-	{ 380, 29, 6, 10, 1 },
-	{ 390, -12, 6, 10, 11 },
-	{ 390, 29, 6, 10, 1 },
+	{ 382, -12, 4, 8, 11 },
+	{ 382, 31, 4, 8, 1 },
+	{ 392, -12, 4, 8, 11 },
+	{ 392, 31, 4, 8, 1 },
 	{ 410, 175, 130, 4, 0 },
 	{ 500, 155, 2, 20, 3 },
 	{ 510, 130, 161, 4, 0 },
 	{ 510, 190, 161, 4, 0 },
-	{ 512, 180, 46, 10, 15 },
-	{ 512, 134, 46, 10, 16 },
-	{ 562, 180, 46, 10, 15 },
-	{ 562, 134, 46, 10, 16 },
-	{ 612, 180, 46, 10, 15 },
-	{ 612, 134, 46, 10, 16 },
-	{ 662, 180, 6, 10, 1 },
-	{ 662, 134, 6, 10, 11 },
+	{ 514, 182, 44, 8, 15 },
+	{ 514, 134, 44, 8, 16 },
+	{ 564, 182, 44, 8, 15 },
+	{ 564, 134, 44, 8, 16 },
+	{ 614, 182, 44, 8, 15 },
+	{ 614, 134, 44, 8, 16 },
+	{ 664, 182, 4, 8, 1 },
+	{ 664, 134, 4, 8, 11 },
 	{ 557, 160, 30, 4, 0 },
 	{ 600, 175, 30, 4, 0 },
 	{ 635, 155, 30, 4, 0 },
 	{ 660, 175, 96, 4, 0 },
 	{ 700, 155, 2, 20, 3 },
-	{ 775, 155, 6, 10, 11 },
+	{ 777, 155, 4, 8, 11 },
 	{ 773, 105, 11, 50, 0 },
 	{ 800, 175, 30, 4, 0 },
 	{ 815, 150, 10, 25, 2 }
@@ -257,10 +257,10 @@ PROGMEM static const MapObject level8[LEVEL8ARRAYSIZE] =
 	{ 124, -64, 4, 128, 0 },
 	{ 84, -64, 4, 128, 100 },
 	{ 98, 60, 16, 4, 7 },
-	{ 120, -192, 4, 128, 0 },
-	{ 88, -192, 4, 128, 0 },
-	{ 116, -320, 4, 128, 0 },
-	{ 92, -360, 4, 168, 0 },
+	{ 120, -192, 4, 132, 0 },
+	{ 88, -192, 4, 132, 0 },
+	{ 116, -320, 4, 132, 0 },
+	{ 92, -360, 4, 172, 0 },
 	{ 120, -320, 168, 4, 0 },
 	{ 96, -360, 158, 4, 0 },
 	{ 208, -335, 15, 15, 0 },
@@ -268,8 +268,8 @@ PROGMEM static const MapObject level8[LEVEL8ARRAYSIZE] =
 	{ 254, -500, 4, 144, 0 },
 	{ 258, -375, 30, 30, 0 },
 	{ 268, -324, 16, 4, 6 },
-	{ 292, -684, 4, 184, 0 },
-	{ 250, -684, 4, 184, 0 },
+	{ 292, -684, 4, 188, 0 },
+	{ 250, -684, 4, 188, 0 },
 	{ 200, -684, 50, 4, 0 },
 	{ 296, -684, 50, 4, 0 },
 	{ 200, -740, 4, 56, 0 },
@@ -294,14 +294,14 @@ PROGMEM static const MapObject level8[LEVEL8ARRAYSIZE] =
 	{ 296, -650, 8, 4, 0 },
 	{ 242, -600, 8, 4, 0 },
 	{ 346, -740, 40, 4, 0 },
-	{ 386, -740, 4, 168, 0 },
-	{ 432, -780, 4, 208, 0 },
-	{ 390, -572, 4, 168, 0 },
-	{ 428, -572, 4, 168, 0 },
-	{ 394, -404, 4, 168, 0 },
-	{ 424, -404, 4, 168, 0 },
-	{ 398, -236, 4, 168, 0 },
-	{ 420, -236, 4, 168, 0 },
+	{ 386, -740, 4, 172, 0 },
+	{ 432, -780, 4, 212, 0 },
+	{ 390, -572, 4, 172, 0 },
+	{ 428, -572, 4, 172, 0 },
+	{ 394, -404, 4, 172, 0 },
+	{ 424, -404, 4, 172, 0 },
+	{ 398, -236, 4, 172, 0 },
+	{ 420, -236, 4, 172, 0 },
 	{ 406, -93, 10, 25, 2 }
 };
 PROGMEM static const MapObject level9[LEVEL9ARRAYSIZE] =
@@ -314,7 +314,7 @@ PROGMEM static const MapObject level9[LEVEL9ARRAYSIZE] =
 	{ 80, -10, 10, 10, 0 },
 	{ 120, -20, 4, 24, 0 },
 	{ 120, -24, 40, 4, 0 },
-	{ 122, -34, 6, 10, 1 },
+	{ 124, -32, 4, 8, 1 },
 	{ 160, -44, 4, 24, 0 },
 	{ 160, -48, 40, 4, 0 },
 	{ 160, -158, 4, 95, 0 },
@@ -322,7 +322,7 @@ PROGMEM static const MapObject level9[LEVEL9ARRAYSIZE] =
 	{ 200, -68, 4, 24, 0 },
 	{ 200, -72, 40, 4, 0 },
 	{ 198, -182, 11, 85, 0 },
-	{ 200, -97, 6, 10, 11 },
+	{ 202, -97, 4, 8, 11 },
 	{ 240, -92, 4, 24, 0 },
 	{ 240, -96, 40, 4, 0 },
 	{ 240, -116, 20, 20, 0 },
@@ -335,11 +335,11 @@ PROGMEM static const MapObject level9[LEVEL9ARRAYSIZE] =
 	{ 380, -188, 2, 20, 3 },
 	{ 400, -188, 4, 24, 0 },
 	{ 400, -192, 40, 4, 0 },
-	{ 410, -202, 6, 10, 1 },
-	{ 432, -202, 6, 10, 1 },
+	{ 412, -200, 4, 8, 1 },
+	{ 434, -200, 4, 8, 1 },
 	{ 440, -212, 4, 24, 0 },
 	{ 440, -216, 40, 4, 0 },
-	{ 450, -226, 6, 10, 1 },
+	{ 452, -224, 4, 8, 1 },
 	{ 480, -236, 4, 24, 0 },
 	{ 480, -240, 40, 4, 0 },
 	{ 520, -294, 4, 30, 0 },
@@ -362,15 +362,15 @@ PROGMEM static const MapObject level10[LEVEL10ARRAYSIZE] =
 	{ 128, -28, 4, 92, 0 },
 	{ 255, 64, 143, 4, 0 },
 	{ 98, 32, 30, 4, 0 },
-	{ 118, 21, 6, 10, 1 },
-	{ 114, 36, 6, 10, 11 },
+	{ 120, 23, 4, 8, 1 },
+	{ 116, 36, 4, 8, 11 },
 	{ 68, 0, 30, 4, 0 },
-	{ 71, -11, 6, 10, 1 },
-	{ 75, 4, 6, 10, 11 },
+	{ 73, -9, 4, 8, 1 },
+	{ 77, 4, 4, 8, 11 },
 	{ 98, -32, 188, 4, 0 },
 	{ 120, -52, 20, 20, 0 },
 	{ 72, -68, 16, 4, 6 },
-	{ 114, -28, 6, 10, 11 },
+	{ 116, -28, 4, 8, 11 },
 	{ 68, -64, 30, 4, 0 },
 	{ 64, -100, 68, 4, 0 },
 	{ 128, -96, 4, 44, 0 },
@@ -378,25 +378,25 @@ PROGMEM static const MapObject level10[LEVEL10ARRAYSIZE] =
 	{ 132, -56, 32, 4, 0 },
 	{ 164, -88, 4, 36, 0 },
 	{ 168, -88, 88, 4, 0 },
-	{ 170, -84, 6, 10, 11 },
-	{ 180, -84, 6, 10, 11 },
-	{ 203, -43, 6, 10, 1 },
-	{ 213, -43, 6, 10, 1 },
-	{ 236, -84, 6, 10, 11 },
-	{ 246, -84, 6, 10, 11 },
+	{ 172, -84, 4, 8, 11 },
+	{ 182, -84, 4, 8, 11 },
+	{ 205, -41, 4, 8, 1 },
+	{ 215, -41, 4, 8, 1 },
+	{ 238, -84, 4, 8, 11 },
+	{ 248, -84, 4, 8, 11 },
 	{ 256, -88, 4, 32, 0 },
 	{ 260, -60, 64, 4, 0 },
 	{ 324, -90, 4, 98, 0 },
-	{ 315, -56, 6, 10, 11 },
-	{ 277, -28, 6, 10, 11 },
+	{ 317, -56, 4, 8, 11 },
+	{ 279, -28, 4, 8, 11 },
 	{ 294, 8, 70, 4, 0 },
-	{ 296, 12, 6, 10, 11 },
+	{ 298, 12, 4, 8, 11 },
 	{ 356, 44, 20, 20, 0 },
 	{ 140, 60, 16, 4, 6 },
 	{ 324, 44, 2, 20, 3 },
 	{ 364, -60, 4, 104, 0 },
 	{ 192, 8, 4, 56, 0 },
-	{ 191, -3, 6, 10, 1 },
+	{ 193, -1, 4, 8, 1 },
 	{ 196, 40, 30, 4, 0 },
 	{ 162, 40, 30, 4, 0 },
 	{ 226, 8, 30, 4, 0 },
@@ -711,8 +711,12 @@ void loop()
 				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
 				break;
 			case 1: // Spike
-				arduboy.drawTriangle(currentMapData[i].x - camX - 2, currentMapData[i].y + currentMapData[i].h - camY, currentMapData[i].x + (currentMapData[i].w / 2) - camX, currentMapData[i].y - camY,
+				arduboy.drawTriangle(currentMapData[i].x - camX - 4, currentMapData[i].y + currentMapData[i].h - camY, 
+					currentMapData[i].x + (currentMapData[i].w / 2) - camX - 1, currentMapData[i].y - camY - 2,
 					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y + currentMapData[i].h - camY, 1);
+
+				// Debug hitbox
+				//arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
 				break;
 			case 2: // Next Level
 				//arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
@@ -743,22 +747,34 @@ void loop()
 				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, 16, 4, 1);
 				break;
 			case 11: // Upsidedown Spike
-				arduboy.drawTriangle(currentMapData[i].x - camX - 2, currentMapData[i].y - camY, currentMapData[i].x + (currentMapData[i].w / 2) - camX, currentMapData[i].y + currentMapData[i].h - camY,
+				arduboy.drawTriangle(currentMapData[i].x - camX - 4, currentMapData[i].y - camY, 
+					currentMapData[i].x + (currentMapData[i].w / 2) - camX - 1, currentMapData[i].y + currentMapData[i].h - camY + 2,
 					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y - camY, 1);
+
+				// Debug hitbox
+				//arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
 				break;
 			case 15: // 5 Spikes
 				for (byte z = 0; z < 5; z++)
 				{
-					arduboy.drawTriangle(currentMapData[i].x - camX - 2 + (z * 10), currentMapData[i].y + currentMapData[i].h - camY, currentMapData[i].x + 3 - camX + (z * 10), currentMapData[i].y - camY,
-						currentMapData[i].x + 8 - camX + (z * 10), currentMapData[i].y + currentMapData[i].h - camY, 1);
+					arduboy.drawTriangle(currentMapData[i].x - camX - 4 + (z * 10), currentMapData[i].y + currentMapData[i].h - camY, 
+						currentMapData[i].x + 1 - camX + (z * 10), currentMapData[i].y - camY - 2,
+						currentMapData[i].x + 6 - camX + (z * 10), currentMapData[i].y + currentMapData[i].h - camY, 1);
 				}
+				// Debug hitbox
+				//arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+
 				break;
 			case 16: // 5 Upsidedown Spikes
 				for (byte z = 0; z < 5; z++)
 				{
-					arduboy.drawTriangle(currentMapData[i].x - camX - 2 + (z * 10), currentMapData[i].y - camY, currentMapData[i].x + 3 - camX + (z * 10), currentMapData[i].y + currentMapData[i].h - camY,
-						currentMapData[i].x + 8 - camX + (z * 10), currentMapData[i].y - camY, 1);
+					arduboy.drawTriangle(currentMapData[i].x - camX - 3 + (z * 10), currentMapData[i].y - camY, 
+						currentMapData[i].x + 2 - camX + (z * 10), currentMapData[i].y + currentMapData[i].h - camY + 2,
+						currentMapData[i].x + 7 - camX + (z * 10), currentMapData[i].y - camY, 1);
 				}
+				// Debug hitbox
+				//arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+
 				break;
 			case 99:
 				arduboy.drawBitmap(currentMapData[i].x - camX, currentMapData[i].y - camY, buttonBase, 16, 4, 1);
