@@ -22,6 +22,7 @@ bool introChanged;
 #define LEVEL6ARRAYSIZE		47
 #define LEVEL7ARRAYSIZE		24
 #define LEVEL8ARRAYSIZE		52
+#define LEVEL9ARRAYSIZE		52
 #define LARGESTARRAYSIZE	52
 
 // The currently used level
@@ -249,14 +250,69 @@ PROGMEM static const MapObject level7[LEVEL7ARRAYSIZE] =
 };
 PROGMEM static const MapObject level8[LEVEL8ARRAYSIZE] =
 {
+	{ 0, 64, 128, 4, 0 },
+	{ -4, 0, 4, 68, 0 },
+	{ 0, 0, 84, 4, 0 },
+	{ 124, -64, 4, 128, 0 },
+	{ 84, -64, 4, 128, 100 },
+	{ 98, 60, 16, 4, 7 },
+	{ 120, -192, 4, 128, 0 },
+	{ 88, -192, 4, 128, 0 },
+	{ 116, -320, 4, 128, 0 },
+	{ 92, -360, 4, 168, 0 },
+	{ 120, -320, 168, 4, 0 },
+	{ 96, -360, 158, 4, 0 },
+	{ 208, -335, 15, 15, 0 },
+	{ 288, -500, 4, 184, 0 },
+	{ 254, -500, 4, 144, 0 },
+	{ 258, -375, 30, 30, 0 },
+	{ 268, -324, 16, 4, 6 },
+	{ 292, -684, 4, 184, 0 },
+	{ 250, -684, 4, 184, 0 },
+	{ 200, -684, 50, 4, 0 },
+	{ 296, -684, 50, 4, 0 },
+	{ 200, -740, 4, 56, 0 },
+	{ 342, -740, 4, 56, 0 },
+	{ 130, -740, 70, 4, 0 },
+	{ 130, -780, 4, 40, 0 },
+	{ 130, -784, 110, 4, 0 },
+	{ 240, -784, 4, 70, 0 },
+	{ 244, -718, 58, 4, 0 },
+	{ 302, -784, 4, 70, 0 },
+	{ 306, -784, 130, 4, 0 },
+	{ 268, -714, 12, 12, 0 },
+	{ 204, -746, 36, 36, 0 },
+	{ 320, -688, 16, 4, 6 },
+	{ 306, -746, 36, 36, 0 },
+	{ 140, -744, 16, 4, 6 },
+	{ 80, -120, 8, 4, 0 },
+	{ 128, -52, 8, 4, 0 },
+	{ 120, -250, 8, 4, 0 },
+	{ 246, -458, 8, 4, 0 },
+	{ 296, -550, 8, 4, 0 },
+	{ 296, -650, 8, 4, 0 },
+	{ 242, -600, 8, 4, 0 },
+	{ 346, -740, 40, 4, 0 },
+	{ 386, -740, 4, 168, 0 },
+	{ 432, -780, 4, 208, 0 },
+	{ 390, -572, 4, 168, 0 },
+	{ 428, -572, 4, 168, 0 },
+	{ 394, -404, 4, 168, 0 },
+	{ 424, -404, 4, 168, 0 },
+	{ 398, -236, 4, 168, 0 },
+	{ 420, -236, 4, 168, 0 },
+	{ 406, -93, 10, 25, 2 }
+};
+PROGMEM static const MapObject level9[LEVEL9ARRAYSIZE] =
+{
 	{ 48, -20, 10, 20, 2 },
 	{ 40, 0, 24, 4, 0 },
 	{ 0, -24, 64, 4, 0 },
 	{ 0, 64, 255, 4, 0 },
-	{ 0, -64, 4, 128, 0 },
+	{ 0, -24, 4, 88, 0 },
 	{ 64, -96, 4, 128, 0 },
 	{ 128, -28, 4, 92, 0 },
-	{ 255, 64, 255, 4, 0 },
+	{ 255, 64, 143, 4, 0 },
 	{ 98, 32, 30, 4, 0 },
 	{ 118, 21, 6, 10, 1 },
 	{ 114, 36, 6, 10, 11 },
@@ -300,7 +356,7 @@ PROGMEM static const MapObject level8[LEVEL8ARRAYSIZE] =
 	{ 394, -90, 4, 154, 0 },
 	{ 328, -90, 66, 4, 0 },
 	{ 338, 4, 16, 4, 8 },
-	{ 90, -84, 2, 20, 3 },
+	{ 90, -84, 2, 20, 3 }
 };
 
 // Copy in RAM of the current level that is being used. Must be at least the size of the largest level
@@ -416,7 +472,7 @@ void loop()
 		{
 			player.respawn(spawnX, spawnY);
 		}
-		else if (player.y < MAPCEILING)
+		else if (player.y < MAPCEILING && currentLevel != 8)
 		{
 			player.respawn(spawnX, spawnY);
 		}
@@ -760,6 +816,12 @@ void LoadLevel(byte levelNumber)
 		for (i = 0; i < LEVEL8ARRAYSIZE; i++)
 		{
 			memcpy_P(&currentMapData[i], &level8[i], sizeof(level8[i]));
+		}
+		break;
+	case 9:
+		for (i = 0; i < LEVEL9ARRAYSIZE; i++)
+		{
+			memcpy_P(&currentMapData[i], &level9[i], sizeof(level9[i]));
 		}
 		break;
 	}
