@@ -22,7 +22,8 @@ bool introChanged;
 #define LEVEL6ARRAYSIZE		47
 #define LEVEL7ARRAYSIZE		24
 #define LEVEL8ARRAYSIZE		52
-#define LEVEL9ARRAYSIZE		52
+#define LEVEL9ARRAYSIZE		44
+#define LEVEL10ARRAYSIZE	52
 #define LARGESTARRAYSIZE	52
 
 // The currently used level
@@ -38,7 +39,7 @@ short spawnX; short spawnY;
 
 // The kill plane at the bottom of the level
 #define MAPFLOOR			300
-#define MAPCEILING			-300
+#define MAPCEILING			-350
 
 float menuBallY = -15;
 float menuBallVelo;
@@ -175,7 +176,7 @@ PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
 {
 	{ 0, 64, 255, 4, 0 },
 	{ 0, 0, 255, 4, 0 },
-	{ 0, 4, 4, 60, 0},
+	{ 0, 4, 4, 60, 0 },
 	{ 64, 8, 6, 10, 11 },
 	{ 64, 49, 6, 10, 1 },
 	{ 62, 4, 11, 4, 0 },
@@ -189,7 +190,7 @@ PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
 	{ 190, 4, 11, 4, 0 },
 	{ 190, 52, 11, 12, 0 },
 	{ 240, 44, 2, 20, 3 },
-	{ 290, 64, 20, 4, 0},
+	{ 290, 64, 20, 4, 0 },
 	{ 320, 8, 6, 10, 11 },
 	{ 320, 49, 6, 10, 1 },
 	{ 330, 8, 6, 10, 11 },
@@ -199,12 +200,12 @@ PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
 	{ 380, 29, 6, 10, 1 },
 	{ 390, -12, 6, 10, 11 },
 	{ 390, 29, 6, 10, 1 },
-	{ 410, 175, 130, 4, 0},
+	{ 410, 175, 130, 4, 0 },
 	{ 500, 155, 2, 20, 3 },
-	{ 510, 130, 160, 4, 0},
-	{ 510, 190, 160, 4, 0 },
-	{ 512, 180, 46, 10, 15},
-	{ 512, 134, 46, 10, 16},
+	{ 510, 130, 161, 4, 0 },
+	{ 510, 190, 161, 4, 0 },
+	{ 512, 180, 46, 10, 15 },
+	{ 512, 134, 46, 10, 16 },
 	{ 562, 180, 46, 10, 15 },
 	{ 562, 134, 46, 10, 16 },
 	{ 612, 180, 46, 10, 15 },
@@ -219,7 +220,7 @@ PROGMEM static const MapObject level6[LEVEL6ARRAYSIZE] =
 	{ 775, 155, 6, 10, 11 },
 	{ 773, 105, 11, 50, 0 },
 	{ 800, 175, 30, 4, 0 },
-	{ 815, 150, 10, 25, 2}
+	{ 815, 150, 10, 25, 2 }
 };
 PROGMEM static const MapObject level7[LEVEL7ARRAYSIZE] =
 {
@@ -304,6 +305,53 @@ PROGMEM static const MapObject level8[LEVEL8ARRAYSIZE] =
 	{ 406, -93, 10, 25, 2 }
 };
 PROGMEM static const MapObject level9[LEVEL9ARRAYSIZE] =
+{
+	{ 0, 48, 40, 4, 0 },
+	{ 40, 28, 4, 24, 0 },
+	{ 40, 24, 40, 4, 0 },
+	{ 80, 4, 4, 24, 0 },
+	{ 80, 0, 40, 4, 0 },
+	{ 80, -10, 10, 10, 0 },
+	{ 120, -20, 4, 24, 0 },
+	{ 120, -24, 40, 4, 0 },
+	{ 122, -34, 6, 10, 1 },
+	{ 160, -44, 4, 24, 0 },
+	{ 160, -48, 40, 4, 0 },
+	{ 160, -158, 4, 95, 0 },
+	{ 180, -68, 2, 20, 3 },
+	{ 200, -68, 4, 24, 0 },
+	{ 200, -72, 40, 4, 0 },
+	{ 198, -182, 11, 85, 0 },
+	{ 200, -97, 6, 10, 11 },
+	{ 240, -92, 4, 24, 0 },
+	{ 240, -96, 40, 4, 0 },
+	{ 240, -116, 20, 20, 0 },
+	{ 280, -116, 4, 24, 0 },
+	{ 280, -120, 40, 4, 0 },
+	{ 320, -140, 4, 24, 0 },
+	{ 320, -144, 10, 4, 0 },
+	{ 360, -164, 4, 24, 0 },
+	{ 360, -168, 40, 4, 0 },
+	{ 380, -188, 2, 20, 3 },
+	{ 400, -188, 4, 24, 0 },
+	{ 400, -192, 40, 4, 0 },
+	{ 410, -202, 6, 10, 1 },
+	{ 432, -202, 6, 10, 1 },
+	{ 440, -212, 4, 24, 0 },
+	{ 440, -216, 40, 4, 0 },
+	{ 450, -226, 6, 10, 1 },
+	{ 480, -236, 4, 24, 0 },
+	{ 480, -240, 40, 4, 0 },
+	{ 520, -294, 4, 30, 0 },
+	{ 500, -244, 16, 4, 6 },
+	{ 520, -260, 4, 24, 0 },
+	{ 520, -264, 40, 4, 0 },
+	{ 500, -244, 16, 4, 6 },
+	{ 560, -284, 4, 24, 0 },
+	{ 560, -288, 40, 4, 0 },
+	{ 580, -313, 10, 25, 2 }
+};
+PROGMEM static const MapObject level10[LEVEL10ARRAYSIZE] =
 {
 	{ 48, -20, 10, 20, 2 },
 	{ 40, 0, 24, 4, 0 },
@@ -822,6 +870,12 @@ void LoadLevel(byte levelNumber)
 		for (i = 0; i < LEVEL9ARRAYSIZE; i++)
 		{
 			memcpy_P(&currentMapData[i], &level9[i], sizeof(level9[i]));
+		}
+		break;
+	case 10:
+		for (i = 0; i < LEVEL10ARRAYSIZE; i++)
+		{
+			memcpy_P(&currentMapData[i], &level10[i], sizeof(level10[i]));
 		}
 		break;
 	}
