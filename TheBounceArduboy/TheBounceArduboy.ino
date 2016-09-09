@@ -234,7 +234,12 @@ void loop()
 					{
 						player.topCol = true;
 					}
-					if (currentMapData[i].type == 8)
+					if (currentMapData[i].type == 2)
+					{
+						gameState = 3;
+						spawnY = 2;
+					}
+					else if (currentMapData[i].type == 8)
 					{
 						if (player.canInteract && player.gravity <= 0)
 						{
