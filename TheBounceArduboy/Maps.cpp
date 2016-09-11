@@ -250,7 +250,8 @@ PROGMEM const MapObject level8[LEVEL8ARRAYSIZE] =
 	{ 424, -404, 4, 172, 0 },
 	{ 398, -236, 4, 172, 0 },
 	{ 420, -236, 4, 172, 0 },
-	{ 406, -93, 10, 25, 2 }
+	{ 406, -93, 10, 25, 2 },
+	{ 402, -68, 18, 4, 0 }
 };
 PROGMEM const MapObject level9[LEVEL9ARRAYSIZE] =
 {

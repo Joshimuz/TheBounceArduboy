@@ -9,12 +9,12 @@
 Arduboy arduboy;
 
 // The current state of the game
-byte gameState = 1; // 1 = MainMenu, 2 = Gameplay, 3 = End level transion
+byte gameState = 1; // 1 = MainMenu, 2 = Gameplay, 3 = End level transion, 4 = Options Menu, 5 = Level Select
 
 // The selection in the menu
-bool introSelection = 1; 
+byte menuSelection = 1; 
 // If the menu selection was changed the previous frame
-bool introChanged; 
+bool selectionChanged; 
 
 // The currently used level
 byte currentLevel;
@@ -42,6 +42,8 @@ float menuBallVelo;
 // Copy in RAM of the current level that is being used. Must be at least the size of the largest level
 MapObject currentMapData[LARGESTARRAYSIZE];
 
+byte levelUnlocked;
+
 void setup() 
 {
 	// Start arduboy stuff
@@ -50,12 +52,26 @@ void setup()
 	// Framerate to 30
 	arduboy.setFrameRate(30);
 
-	LoadLevel(1);
+	// Read to see if there is any levels unlocked
+	levelUnlocked = EEPROM.read(450);
 
-	// Basically setup() for the player but also functions as respawning
-	player.respawn(spawnX, spawnY);
-
-	//arduboy.setRGBled(255, 255, 255); //God damn flipped LED Q___Q
+	// Check if variable is within normal ranges
+	if (levelUnlocked > 0 && levelUnlocked < TOTALNUMBEROFLEVELS)
+	{
+		LoadLevel(levelUnlocked);
+	}
+	else if (levelUnlocked == TOTALNUMBEROFLEVELS)
+	{
+		//gameState = 5;
+		LoadLevel(1);
+	}
+	else
+	{
+		// If no valid save file found, create a new one
+		EEPROM.write(450, 1);
+		// Load first level
+		LoadLevel(1);
+	}
 }
 
 void loop() 
@@ -71,9 +87,9 @@ void loop()
 	{	
 		if (arduboy.pressed(A_BUTTON))
 		{
-			if (!introChanged)
+			if (!selectionChanged)
 			{
-				if (introSelection)
+				if (menuSelection == 1)
 				{
 					// Start the game when PLAY button pressed
 					gameState = 2;
@@ -82,35 +98,36 @@ void loop()
 				}
 				else
 				{
-					if (arduboy.audio.enabled())
-					{
-						arduboy.audio.off();
-						arduboy.audio.saveOnOff();
-					}
-					else
-					{
-						arduboy.audio.on();
-						arduboy.audio.saveOnOff();
-					}
+					gameState = 4;
+
+					arduboy.initRandomSeed();
 				}
 
-				introChanged = true;
+				selectionChanged = true;
 			}
 		}
 		else if (arduboy.pressed(LEFT_BUTTON) || arduboy.pressed(RIGHT_BUTTON))
 		{
 			// If the selection didn't change last frame
-			if (!introChanged)
+			if (!selectionChanged)
 			{
 				// Change it
-				introSelection = !introSelection;
-				introChanged = true;
+				if (menuSelection == 1)
+				{
+					menuSelection = 0;
+				}
+				else
+				{
+					menuSelection = 1;
+				}
+
+				selectionChanged = true;
 			}
 		}
-		else if (introChanged)
+		else
 		{
 			// A frame has passed so reset the value
-			introChanged = false;
+			selectionChanged = false;
 		}
 
 #if DEBUG == 0 // Don't draw title screen in debug mode to same ROM for text rendering
@@ -125,7 +142,7 @@ void loop()
 #endif
 
 		// Draw the menu		
-		if (introSelection)
+		if (menuSelection == 1)
 		{
 			arduboy.drawBitmap(15, 47, playButton, 31, 14, 1);
 			arduboy.drawBitmap(82, 49, configButton, 31, 10, 1);
@@ -138,7 +155,7 @@ void loop()
 
 #if DEBUG == 0 // Don't draw title screen in debug mode to same ROM for text rendering
 		arduboy.drawBitmap(0, 0, titleScreen, 128, 64, 1);
-		arduboy.drawBitmap(29, (int)menuBallY, menuBall, 16, 16, 1);
+		arduboy.drawBitmap(29, menuBallY, menuBall, 16, 16, 1);
 #endif
 	}
 	// Gameplay Update
@@ -304,7 +321,7 @@ void loop()
 		camX = camX + 0.07f * ((player.x - 64) - camX);
 		camY = camY + 0.07f * ((player.y - 32) - camY);
 	}
-	// End level portal hit Update
+	// End level portal animation Update
 	else if (gameState == 3)
 	{
 		if (arduboy.everyXFrames(2))
@@ -327,11 +344,174 @@ void loop()
 			LoadLevel(currentLevel + 1);
 
 			//currentLevel++;
-			player.respawn(spawnX, spawnY);
+			//player.respawn(spawnX, spawnY);
+
+			// If the save file has unlocked a level lower than the level just reached
+			if (EEPROM.read(450) < currentLevel)
+			{
+				// Write the new level
+				EEPROM.write(450, currentLevel);
+				levelUnlocked = currentLevel;
+			}
 		}
 		arduboy.tunes.tone(5000, 10);
 	}
-	// Gameplay/End level portal hit Draw
+	// Options Menu
+	else if (gameState == 4)
+	{
+		arduboy.setCursor(0, 0);
+		arduboy.print(F("Options Menu\n\n"));
+
+		arduboy.print(F("  Audio: "));
+		if (arduboy.audio.enabled())
+		{
+			arduboy.print(F("ON"));
+		}
+		else
+		{
+			arduboy.print(F("OFF"));
+		}
+
+		arduboy.print(F("\n  Level Select"));
+
+		if (arduboy.pressed(A_BUTTON))
+		{
+			if (!selectionChanged)
+			{
+				switch (menuSelection)
+				{
+					case 0:
+						if (arduboy.audio.enabled())
+						{
+							arduboy.audio.off();
+							arduboy.audio.saveOnOff();
+						}
+						else
+						{
+							arduboy.audio.on();
+							arduboy.audio.saveOnOff();
+						}
+						break;
+					case 1:
+						gameState++;
+						break;
+				}
+				
+
+				selectionChanged = true;
+			}
+		}
+		else if (arduboy.pressed(B_BUTTON))
+		{
+			if (!selectionChanged)
+			{
+				gameState = 1;
+
+				selectionChanged = true;
+			}
+		}
+		else if (arduboy.pressed(UP_BUTTON))
+		{
+			if (!selectionChanged)
+			{
+				menuSelection--;
+				selectionChanged = true;
+
+				if (menuSelection < 0)
+				{
+					menuSelection = 0;
+				}
+			}
+		}
+		else if (arduboy.pressed(DOWN_BUTTON))
+		{
+			if (!selectionChanged)
+			{
+				menuSelection++;
+				selectionChanged = true;
+
+				if (menuSelection > 1)
+				{
+					menuSelection = 1;
+				}
+			}
+		}
+		else
+		{
+			selectionChanged = false;
+		}
+
+		//arduboy.drawChar(16, 16, '<', 1, 0, 1);
+		arduboy.drawFastHLine(0, 19 + (menuSelection * 8), 8, 1);
+
+		arduboy.print(F("\n\n\n  UP/DOWN=Choose"));
+		arduboy.print(F("\n  A=Select B=Back"));
+	}
+	// Level Select
+	else if (gameState == 5)
+	{
+		arduboy.setCursor(0, 0);
+		arduboy.print(F("Level Select\n\n"));
+		arduboy.print(F(" Choose level to play\n\n"));
+
+		if (arduboy.pressed(UP_BUTTON))
+		{
+			if (!selectionChanged)
+			{
+				currentLevel++;
+				selectionChanged = true;
+
+				if (currentLevel > levelUnlocked)
+				{
+					currentLevel = levelUnlocked;
+				}
+			}
+		}
+		else if (arduboy.pressed(DOWN_BUTTON))
+		{
+			if (!selectionChanged)
+			{
+				currentLevel--;
+				selectionChanged = true;
+
+				if (currentLevel < 1)
+				{
+					currentLevel = 1;
+				}
+			}
+		}
+		else if (arduboy.pressed(A_BUTTON))
+		{
+			if (!selectionChanged)
+			{
+				LoadLevel(currentLevel);
+				gameState = 2;
+
+				selectionChanged = true;
+			}
+		}
+		else if (arduboy.pressed(B_BUTTON))
+		{
+			if (!selectionChanged)
+			{
+				gameState--;
+
+				selectionChanged = true;
+			}
+		}
+		else
+		{
+			selectionChanged = false;
+		}
+
+		arduboy.print("  Level: ");
+		arduboy.print(currentLevel);
+
+		arduboy.print(F("\n\n  UP/DOWN=Choose"));
+		arduboy.print(F("\n  A=Select B=Back"));
+	}
+
+	// Gameplay/End level portal animation Draw
 	if (gameState == 2 || gameState == 3)
 	{
 #if DEBUG == 1
@@ -372,6 +552,10 @@ void loop()
 					arduboy.drawRect(currentMapData[i].x - camX + currentMapData[i].w, currentMapData[i].y - camY, 8, 5, 1);
 				}
 				break;
+			case 6:
+				break;
+			case 7:
+				break;
 			case 8:
 				if (player.gravity >= 0)
 				{
@@ -381,11 +565,11 @@ void loop()
 				{
 					arduboy.drawRect(currentMapData[i].x - camX + 4, currentMapData[i].y - camY + 3, 8, 3, 1);
 				}
-				
+
 				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, 16, 4, 1);
 				break;
 			case 11: // Upsidedown Spike
-				arduboy.drawTriangle(currentMapData[i].x - camX - 4, currentMapData[i].y - camY, 
+				arduboy.drawTriangle(currentMapData[i].x - camX - 4, currentMapData[i].y - camY,
 					currentMapData[i].x + (currentMapData[i].w / 2) - camX - 1, currentMapData[i].y + currentMapData[i].h - camY + 2,
 					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y - camY, 1);
 
@@ -396,7 +580,7 @@ void loop()
 			case 15: // 5 Spikes
 				for (byte z = 0; z < 5; z++)
 				{
-					arduboy.drawTriangle(currentMapData[i].x - camX - 4 + (z * 10), currentMapData[i].y + currentMapData[i].h - camY, 
+					arduboy.drawTriangle(currentMapData[i].x - camX - 4 + (z * 10), currentMapData[i].y + currentMapData[i].h - camY,
 						currentMapData[i].x + 1 - camX + (z * 10), currentMapData[i].y - camY - 2,
 						currentMapData[i].x + 6 - camX + (z * 10), currentMapData[i].y + currentMapData[i].h - camY, 1);
 				}
@@ -408,7 +592,7 @@ void loop()
 			case 16: // 5 Upsidedown Spikes
 				for (byte z = 0; z < 5; z++)
 				{
-					arduboy.drawTriangle(currentMapData[i].x - camX - 3 + (z * 10), currentMapData[i].y - camY, 
+					arduboy.drawTriangle(currentMapData[i].x - camX - 3 + (z * 10), currentMapData[i].y - camY,
 						currentMapData[i].x + 2 - camX + (z * 10), currentMapData[i].y + currentMapData[i].h - camY + 2,
 						currentMapData[i].x + 7 - camX + (z * 10), currentMapData[i].y - camY, 1);
 				}
@@ -422,56 +606,56 @@ void loop()
 				break;
 			case 100:
 				break;
-			}
-
-			// Saves ROM if check for duplicate types outside of switch with same if statement
-			if (currentMapData[i].type == 4 || currentMapData[i].type == 5)
-			{
-				arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
-
-				for (byte z = 0; z < 2; z++)
-				{
-					arduboy.drawPixel(random(currentMapData[i].x + 2, currentMapData[i].x + currentMapData[i].w - 2) - camX, random(currentMapData[i].y + 2, currentMapData[i].y + currentMapData[i].h - 1) - camY, 1);
 				}
-			}
-			else if (currentMapData[i].type == 6 || currentMapData[i].type == 7)
-			{
-				arduboy.drawBitmap(currentMapData[i].x - camX, currentMapData[i].y - camY, buttonBase, 16, 4, 1);
-				arduboy.drawRect(currentMapData[i].x - camX + 4, currentMapData[i].y - camY - 2, 8, 3, 1);
-			}
-		}
+
+				// Saves ROM if check for duplicate types outside of switch with same if statement
+				if (currentMapData[i].type == 4 || currentMapData[i].type == 5)
+				{
+					arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
+
+					for (byte z = 0; z < 2; z++)
+					{
+						arduboy.drawPixel(random(currentMapData[i].x + 2, currentMapData[i].x + currentMapData[i].w - 2) - camX, random(currentMapData[i].y + 2, currentMapData[i].y + currentMapData[i].h - 1) - camY, 1);
+					}
+				}
+				else if (currentMapData[i].type == 6 || currentMapData[i].type == 7)
+				{
+					arduboy.drawBitmap(currentMapData[i].x - camX, currentMapData[i].y - camY, buttonBase, 16, 4, 1);
+					arduboy.drawRect(currentMapData[i].x - camX + 4, currentMapData[i].y - camY - 2, 8, 3, 1);
+				}
+				}
 
 #if DEBUG == 0 // Saving ROM for debug mode
 
-		if (currentLevel == 1) // Draw A button tutorial
-		{
-			arduboy.drawBitmap(305 - camX, 53 - camY, abButtons, 20, 14, 1);
-			arduboy.fillRect(318 - camX, 55 - camY, 4, 6, 1);
-		}
-		else if (currentLevel == 2) // Draw B button tutorial
-		{
-			arduboy.drawBitmap(-155 - camX, 98 - camY, abButtons, 20, 14, 1);
-			arduboy.fillRect(-152 - camX, 104 - camY, 4, 6, 1);
-		}
+				if (currentLevel == 1) // Draw A button tutorial
+				{
+					arduboy.drawBitmap(305 - camX, 53 - camY, abButtons, 20, 14, 1);
+					arduboy.fillRect(318 - camX, 55 - camY, 4, 6, 1);
+				}
+				else if (currentLevel == 2) // Draw B button tutorial
+				{
+					arduboy.drawBitmap(-155 - camX, 98 - camY, abButtons, 20, 14, 1);
+					arduboy.fillRect(-152 - camX, 104 - camY, 4, 6, 1);
+				}
 #endif
 
-		if (gameState == 2)
-		{
+				if (gameState == 2)
+				{
 #if DEBUG == 1 // Draw player hitboxes
-			arduboy.drawPixel(player.x - camX, player.y + 3 - camY, 1);
-			arduboy.drawPixel(player.x - camX, player.y - 3 - camY, 1);
-			arduboy.drawPixel(player.x + 3 - camX, player.y - camY, 1);
-			arduboy.drawPixel(player.x - 3 - camX, player.y - camY, 1);
+					arduboy.drawPixel(player.x - camX, player.y + 3 - camY, 1);
+					arduboy.drawPixel(player.x - camX, player.y - 3 - camY, 1);
+					arduboy.drawPixel(player.x + 3 - camX, player.y - camY, 1);
+					arduboy.drawPixel(player.x - 3 - camX, player.y - camY, 1);
 #endif
 
-			arduboy.fillCircle(player.x - camX, player.y - camY, 1, 1);
+					arduboy.fillCircle(player.x - camX, player.y - camY, 1, 1);
 		}
-		else
-		{
-			//arduboy.drawFastVLine(player.x - camX, player.y - camY, spawnY, 1);
-			arduboy.drawRect(player.x - camX, player.y - camY, 2, spawnY, 1);
-		}
-		
+				else
+				{
+					//arduboy.drawFastVLine(player.x - camX, player.y - camY, spawnY, 1);
+					arduboy.drawRect(player.x - camX, player.y - camY, 2, spawnY, 1);
+				}
+
 	}
 
 	arduboy.display();
@@ -557,4 +741,6 @@ void LoadLevel(byte levelNumber)
 	spawnX = DEFAULTSPAWNX;
 	spawnY = DEFAULTSPAWNY;
 	player.gravity = DEFAULTGRAVITY;
+
+	player.respawn(spawnX, spawnY);
 }
