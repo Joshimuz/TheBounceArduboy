@@ -1,4 +1,5 @@
 // Joshimuz 2016
+#define DEBUG 0
 
 #include "Maps.h"
 #include "Sprites.h"
@@ -23,6 +24,9 @@ byte currentLevelArraySize;
 // Position of the camera used for drawing
 short camX; short camY;
 
+#define DEFAULTSPAWNX 32
+#define DEFAULTSPAWNY 32
+
 // The respawn position for the player
 short spawnX; short spawnY;
 
@@ -30,8 +34,10 @@ short spawnX; short spawnY;
 #define MAPFLOOR			300
 #define MAPCEILING			-350
 
+#if DEBUG == 0 // Don't draw title screen in debug mode to same ROM for text rendering
 float menuBallY = -15;
 float menuBallVelo;
+#endif
 
 // Copy in RAM of the current level that is being used. Must be at least the size of the largest level
 MapObject currentMapData[LARGESTARRAYSIZE];
@@ -41,7 +47,7 @@ void setup()
 	// Start arduboy stuff
 	arduboy.beginNoLogo();
 
-	// Framerate to 30 due to console peasntry
+	// Framerate to 30
 	arduboy.setFrameRate(30);
 
 	LoadLevel(1);
@@ -107,6 +113,7 @@ void loop()
 			introChanged = false;
 		}
 
+#if DEBUG == 0 // Don't draw title screen in debug mode to same ROM for text rendering
 		menuBallVelo += 0.15f;
 
 		if (menuBallY >= 32)
@@ -115,9 +122,9 @@ void loop()
 		}
 		
 		menuBallY += menuBallVelo;
+#endif
 
-		// Draw the menu
-		arduboy.drawBitmap(0, 0, titleScreen, 128, 64, 1);
+		// Draw the menu		
 		if (introSelection)
 		{
 			arduboy.drawBitmap(15, 47, playButton, 31, 14, 1);
@@ -129,12 +136,14 @@ void loop()
 			arduboy.drawBitmap(82, 47, configButton, 31, 14, 1);
 		}
 
+#if DEBUG == 0 // Don't draw title screen in debug mode to same ROM for text rendering
+		arduboy.drawBitmap(0, 0, titleScreen, 128, 64, 1);
 		arduboy.drawBitmap(29, (int)menuBallY, menuBall, 16, 16, 1);
-	} // Intro
-	// Gameplay
+#endif
+	}
+	// Gameplay Update
 	else if (gameState == 2)
 	{
-		//// Update ////
 		if (arduboy.pressed(UP_BUTTON))
 		{
 			gameState = 1;
@@ -159,11 +168,10 @@ void loop()
 				&& player.y >= currentMapData[i].y - 5
 				&& player.y <= currentMapData[i].y + currentMapData[i].h + 5)
 			{
-				//arduboy.print("NEAR");
 				if (player.x >= currentMapData[i].x
 					&& player.x <= currentMapData[i].x + currentMapData[i].w
-					&& player.y + 4 >= currentMapData[i].y
-					&& player.y + 4 <= currentMapData[i].y + currentMapData[i].h)
+					&& player.y + 3 >= currentMapData[i].y
+					&& player.y + 3 <= currentMapData[i].y + currentMapData[i].h)
 				{
 					switch (currentMapData[i].type)
 					{
@@ -296,7 +304,7 @@ void loop()
 		camX = camX + 0.07f * ((player.x - 64) - camX);
 		camY = camY + 0.07f * ((player.y - 32) - camY);
 	}
-	// Hit lever marker
+	// End level portal hit Update
 	else if (gameState == 3)
 	{
 		if (arduboy.everyXFrames(2))
@@ -323,15 +331,17 @@ void loop()
 		}
 		arduboy.tunes.tone(5000, 10);
 	}
-	// Gameplay Draw
+	// Gameplay/End level portal hit Draw
 	if (gameState == 2 || gameState == 3)
 	{
-		//// Draw ////
-		//arduboy.setCursor(0, 0);
-		//arduboy.print(arduboy.cpuLoad());
-		//arduboy.print(player.x);
-		//arduboy.print(" ");
-		//arduboy.print(player.y);
+#if DEBUG == 1
+		arduboy.setCursor(0, 0);
+		arduboy.print(arduboy.cpuLoad());
+		arduboy.print(" ");
+		arduboy.print(player.x);
+		arduboy.print(" ");
+		arduboy.print(player.y);
+#endif
 
 		for (byte i = 0; i < currentLevelArraySize; i++)
 		{
@@ -346,8 +356,9 @@ void loop()
 					currentMapData[i].x + (currentMapData[i].w / 2) - camX - 1, currentMapData[i].y - camY - 2,
 					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y + currentMapData[i].h - camY, 1);
 
-				// Debug hitbox
-				//arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+#if DEBUG == 1
+				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+#endif
 				break;
 			case 2: // Next Level
 				//arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
@@ -360,10 +371,6 @@ void loop()
 				{
 					arduboy.drawRect(currentMapData[i].x - camX + currentMapData[i].w, currentMapData[i].y - camY, 8, 5, 1);
 				}
-				break;
-			case 6:
-				break;
-			case 7:
 				break;
 			case 8:
 				if (player.gravity >= 0)
@@ -382,8 +389,9 @@ void loop()
 					currentMapData[i].x + (currentMapData[i].w / 2) - camX - 1, currentMapData[i].y + currentMapData[i].h - camY + 2,
 					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y - camY, 1);
 
-				// Debug hitbox
-				//arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+#if DEBUG == 1
+				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+#endif
 				break;
 			case 15: // 5 Spikes
 				for (byte z = 0; z < 5; z++)
@@ -392,8 +400,9 @@ void loop()
 						currentMapData[i].x + 1 - camX + (z * 10), currentMapData[i].y - camY - 2,
 						currentMapData[i].x + 6 - camX + (z * 10), currentMapData[i].y + currentMapData[i].h - camY, 1);
 				}
-				// Debug hitbox
-				//arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+#if DEBUG == 1
+				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+#endif
 
 				break;
 			case 16: // 5 Upsidedown Spikes
@@ -403,8 +412,9 @@ void loop()
 						currentMapData[i].x + 2 - camX + (z * 10), currentMapData[i].y + currentMapData[i].h - camY + 2,
 						currentMapData[i].x + 7 - camX + (z * 10), currentMapData[i].y - camY, 1);
 				}
-				// Debug hitbox
-				//arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+#if DEBUG == 1
+				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
+#endif
 
 				break;
 			case 99:
@@ -414,12 +424,11 @@ void loop()
 				break;
 			}
 
-			// Saves Flash if check for duplicate types outside of switch with same if statement
+			// Saves ROM if check for duplicate types outside of switch with same if statement
 			if (currentMapData[i].type == 4 || currentMapData[i].type == 5)
 			{
 				arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
-				//arduboy.drawLine(currentMapData[i].x + (currentMapData[i].w / 2) - camX, currentMapData[i].y + (currentMapData[i].h / 2) - camY,
-				//	random(currentMapData[i].x, currentMapData[i].x + currentMapData[i].w) - camX, random(currentMapData[i].y, currentMapData[i].y + currentMapData[i].h) - camY, 1);
+
 				for (byte z = 0; z < 2; z++)
 				{
 					arduboy.drawPixel(random(currentMapData[i].x + 2, currentMapData[i].x + currentMapData[i].w - 2) - camX, random(currentMapData[i].y + 2, currentMapData[i].y + currentMapData[i].h - 1) - camY, 1);
@@ -432,6 +441,8 @@ void loop()
 			}
 		}
 
+#if DEBUG == 0 // Saving ROM for debug mode
+
 		if (currentLevel == 1) // Draw A button tutorial
 		{
 			arduboy.drawBitmap(305 - camX, 53 - camY, abButtons, 20, 14, 1);
@@ -442,15 +453,23 @@ void loop()
 			arduboy.drawBitmap(-155 - camX, 98 - camY, abButtons, 20, 14, 1);
 			arduboy.fillRect(-152 - camX, 104 - camY, 4, 6, 1);
 		}
+#endif
 
 		if (gameState == 2)
 		{
-			arduboy.fillCircle((int)player.x - camX, (int)player.y - camY, 1, 1);
+#if DEBUG == 1 // Draw player hitboxes
+			arduboy.drawPixel(player.x - camX, player.y + 3 - camY, 1);
+			arduboy.drawPixel(player.x - camX, player.y - 3 - camY, 1);
+			arduboy.drawPixel(player.x + 3 - camX, player.y - camY, 1);
+			arduboy.drawPixel(player.x - 3 - camX, player.y - camY, 1);
+#endif
+
+			arduboy.fillCircle(player.x - camX, player.y - camY, 1, 1);
 		}
 		else
 		{
-			//arduboy.drawFastVLine((int)player.x - camX, (int)player.y - camY, spawnY, 1);
-			arduboy.drawRect((int)player.x - camX, (int)player.y - camY, 2, spawnY, 1);
+			//arduboy.drawFastVLine(player.x - camX, player.y - camY, spawnY, 1);
+			arduboy.drawRect(player.x - camX, player.y - camY, 2, spawnY, 1);
 		}
 		
 	}
@@ -535,7 +554,7 @@ void LoadLevel(byte levelNumber)
 
 	currentLevelArraySize = i;
 	currentLevel = levelNumber;
-	spawnX = 32;
-	spawnY = 32;
+	spawnX = DEFAULTSPAWNX;
+	spawnY = DEFAULTSPAWNY;
 	player.gravity = DEFAULTGRAVITY;
 }
