@@ -344,7 +344,7 @@ void loop()
 			LoadLevel(currentLevel + 1);
 
 			// If the save file has unlocked a level lower than the level just reached
-			if (EEPROM.read(450) < currentLevel && currentLevel < TOTALNUMBEROFLEVELS)
+			if (EEPROM.read(450) < currentLevel && currentLevel <= TOTALNUMBEROFLEVELS)
 			{
 				// Write the new level
 				EEPROM.write(450, currentLevel);
