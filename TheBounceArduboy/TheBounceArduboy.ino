@@ -343,16 +343,18 @@ void loop()
 
 			LoadLevel(currentLevel + 1);
 
-			//currentLevel++;
-			//player.respawn(spawnX, spawnY);
-
 			// If the save file has unlocked a level lower than the level just reached
-			if (EEPROM.read(450) < currentLevel)
+			if (EEPROM.read(450) < currentLevel && currentLevel < TOTALNUMBEROFLEVELS)
 			{
 				// Write the new level
 				EEPROM.write(450, currentLevel);
 				levelUnlocked = currentLevel;
 			}
+
+			//currentLevel++;
+			//player.respawn(spawnX, spawnY);
+
+			
 		}
 		arduboy.tunes.tone(5000, 10);
 	}
