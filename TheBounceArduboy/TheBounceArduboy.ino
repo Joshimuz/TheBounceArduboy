@@ -535,7 +535,7 @@ void loop()
 				break;
 			case 1: // Spike
 				arduboy.drawTriangle(currentMapData[i].x - camX - 4, currentMapData[i].y + currentMapData[i].h - camY, 
-					currentMapData[i].x + (currentMapData[i].w / 2) - camX - 1, currentMapData[i].y - camY - 2,
+					currentMapData[i].x + (currentMapData[i].w / 2) - camX - 1, currentMapData[i].y - camY - 3,
 					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y + currentMapData[i].h - camY, 1);
 
 #if DEBUG == 1
@@ -571,9 +571,9 @@ void loop()
 				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, 16, 4, 1);
 				break;
 			case 11: // Upsidedown Spike
-				arduboy.drawTriangle(currentMapData[i].x - camX - 4, currentMapData[i].y - camY,
+				arduboy.drawTriangle(currentMapData[i].x - camX - 4, currentMapData[i].y - camY - 1,
 					currentMapData[i].x + (currentMapData[i].w / 2) - camX - 1, currentMapData[i].y + currentMapData[i].h - camY + 2,
-					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y - camY, 1);
+					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y - camY - 1, 1);
 
 #if DEBUG == 1
 				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);

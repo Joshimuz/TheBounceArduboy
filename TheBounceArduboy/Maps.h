@@ -10,8 +10,8 @@ struct MapObject
 {
 	short x; short y;
 	byte w; byte h;
-	byte type;	// 0 = block, 1 = spike(4w8h), 2 = endlevel(10w25h), 3 = checkpoint(2w20h), 4 = Portal One, 5 = Portal Two, 6 = Removal Button(16w4h), 7 = Add Button, 8 = Gravity Button
-				// 11 = Upsidedown Spike, 15 = 5 spikes(44w8h), 16 = 5 upsidedown spikes
+	byte type;	// 0 = block, 1 = spike(4w7h), 2 = endlevel(10w25h), 3 = checkpoint(2w20h), 4 = Portal One, 5 = Portal Two, 6 = Removal Button(16w4h), 7 = Add Button, 8 = Gravity Button
+				// 11 = Upsidedown Spike(4w7h), 15 = 5 spikes(44w8h), 16 = 5 upsidedown spikes(44w8h)
 				// 99 = Pressed Button, 100 = BlockToAdd
 };
 
