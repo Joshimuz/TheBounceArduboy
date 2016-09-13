@@ -315,14 +315,21 @@ void loop()
 						player.respawn(spawnX, spawnY);
 
 						// Delay this frame for a bit so player can see they hit a spike
-						delay(100);
+						delay(200);
 					}
 				}
 			}
 		}
 
-		camX = camX + 0.07f * ((player.x - 64) - camX);
-		camY = camY + 0.07f * ((player.y - 32) - camY);
+		camX = camX + 0.08f * ((player.x - 64) - camX);
+		if (player.gravity > 0)
+		{
+			camY = camY + 0.08f * ((player.y - 32) - camY);
+		}
+		else
+		{
+			camY = camY + 0.08f * ((player.y - 48) - camY);
+		}
 	}
 	// End level portal animation Update
 	else if (gameState == 3)
@@ -501,6 +508,7 @@ void loop()
 				gameState = 2;
 
 				selectionChanged = true;
+				menuSelection = 0;
 			}
 		}
 		else if (arduboy.pressed(B_BUTTON))
@@ -750,6 +758,12 @@ void LoadLevel(byte levelNumber)
 		for (i = 0; i < LEVEL11ARRAYSIZE; i++)
 		{
 			memcpy_P(&currentMapData[i], &level11[i], sizeof(level11[i]));
+		}
+		break;
+	case 12:
+		for (i = 0; i < LEVEL12ARRAYSIZE; i++)
+		{
+			memcpy_P(&currentMapData[i], &level12[i], sizeof(level12[i]));
 		}
 		break;
 	}
