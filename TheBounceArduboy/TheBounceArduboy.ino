@@ -213,7 +213,7 @@ void loop()
 							{
 								arduboy.tunes.tone(4000, 100);
 								spawnX = currentMapData[i].x;
-								spawnY = currentMapData[i].y - 12;
+								spawnY = currentMapData[i].y - 8;
 							}
 							break;
 						case 4:
@@ -764,6 +764,12 @@ void LoadLevel(byte levelNumber)
 		for (i = 0; i < LEVEL12ARRAYSIZE; i++)
 		{
 			memcpy_P(&currentMapData[i], &level12[i], sizeof(level12[i]));
+		}
+		break;
+	case 13:
+		for (i = 0; i < LEVEL13ARRAYSIZE; i++)
+		{
+			memcpy_P(&currentMapData[i], &level13[i], sizeof(level13[i]));
 		}
 		break;
 	}

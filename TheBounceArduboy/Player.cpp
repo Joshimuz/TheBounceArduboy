@@ -128,6 +128,11 @@ void PlayerClass::respawn(short spawnX, short spawnY)
 {
 	x = spawnX;
 	y = spawnY;
+	if (gravity != DEFAULTGRAVITY)
+	{
+		y += 8;
+	}
+	
 
 	yVelocity = 0;
 	xVelocity = 0; 

@@ -27,9 +27,10 @@ struct MapObject
 #define LEVEL10ARRAYSIZE	52
 #define LEVEL11ARRAYSIZE	74
 #define LEVEL12ARRAYSIZE	74
-#define LARGESTARRAYSIZE	74
+#define LEVEL13ARRAYSIZE	87
+#define LARGESTARRAYSIZE	87
 
-#define TOTALNUMBEROFLEVELS 12
+#define TOTALNUMBEROFLEVELS 13
 
 extern const MapObject level1[LEVEL1ARRAYSIZE];
 extern const MapObject level2[LEVEL2ARRAYSIZE];
@@ -43,6 +44,7 @@ extern const MapObject level9[LEVEL9ARRAYSIZE];
 extern const MapObject level10[LEVEL10ARRAYSIZE];
 extern const MapObject level11[LEVEL11ARRAYSIZE];
 extern const MapObject level12[LEVEL12ARRAYSIZE];
+extern const MapObject level13[LEVEL13ARRAYSIZE];
 
 #endif
 
