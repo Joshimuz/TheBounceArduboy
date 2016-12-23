@@ -602,6 +602,7 @@ PROGMEM const MapObject level13[LEVEL13ARRAYSIZE] =
 	{ 436, -6, 4, 7, 1 },
 	{ 13, 44, 5, 20, 3 }
 };
+
 PROGMEM const MapObject level14[LEVEL14ARRAYSIZE] =
 {
 	{ -20, 64, 255, 4, 0 },

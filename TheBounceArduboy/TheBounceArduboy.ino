@@ -585,11 +585,6 @@ void loop()
 	// End of game Rocket
 	else if (gameState == 6)
 	{
-		if (arduboy.pressed(UP_BUTTON))
-		{
-			//gameState = 1;
-		}
-
 		// Using player position as rocket position
 		player.x += random(-1, 2);
 		player.y += random(-1, 2);
