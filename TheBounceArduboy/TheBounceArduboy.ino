@@ -50,7 +50,9 @@ void setup()
 	arduboy.beginNoLogo();
 
 	// Framerate to 30
-	arduboy.setFrameRate(30);
+	// Framerate was 30 on the bugged frame timing (or the thought it was a bug fixed version... idk anymore)
+	// but default 60 seems correct on offical Arduboy ver 1.1.1
+	//arduboy.setFrameRate(30);
 
 	// Read to see if there is any levels unlocked
 	levelUnlocked = EEPROM.read(450);
@@ -185,6 +187,19 @@ void loop()
 			// Respawn the player as they have died
 			player.respawn(spawnX, spawnY);
 		}
+		//else if (currentLevel == 14)
+		//{
+		//	// Player hit end of game Rocket
+		//	if (player.x > 215 && player.x < 251 && player.y > -20 && player.y < 33)
+		//	{
+		//		gameState = 6;
+		//		camX = 169;
+		//		camY = -25;
+		//		player.x = 0;
+		//		player.y = 0;
+		//		EEPROM.write(450, TOTALNUMBEROFLEVELS);
+		//	}
+		//}
 
 		// Collisions!
 		for (short i = 0; i < currentLevelArraySize; i++)
@@ -255,6 +270,21 @@ void loop()
 							}
 							player.hitInteractable();
 							break;
+						case 17:
+							gameState = 6;
+							camX = 169;
+							camY = -25;
+							player.x = 0;
+							player.y = 0;
+							EEPROM.write(450, TOTALNUMBEROFLEVELS);
+
+							for (int i = 0; i < 20; i++)
+							{
+								currentMapData[i + 6].x = random(169, 297);
+								currentMapData[i + 6].y = -random(50, 150);
+							}
+
+							break;
 						case 100:
 							break;
 					}
@@ -264,7 +294,8 @@ void loop()
 					&& player.y - 3 >= currentMapData[i].y
 					&& player.y - 3 <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && currentMapData[i].type != 5 && currentMapData[i].type != 100)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && 
+						currentMapData[i].type != 5 && currentMapData[i].type != 17 && currentMapData[i].type != 100)
 					{
 						player.topCol = true;
 					}
@@ -288,7 +319,8 @@ void loop()
 					&& player.y >= currentMapData[i].y
 					&& player.y <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && currentMapData[i].type != 5 && currentMapData[i].type != 100)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && 
+						currentMapData[i].type != 5 && currentMapData[i].type != 17 && currentMapData[i].type != 100)
 					{
 						player.rightCol = true;
 					}
@@ -298,7 +330,8 @@ void loop()
 					&& player.y >= currentMapData[i].y
 					&& player.y <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && currentMapData[i].type != 5 && currentMapData[i].type != 100)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && 
+						currentMapData[i].type != 5 && currentMapData[i].type != 17 && currentMapData[i].type != 100)
 					{
 						player.leftCol = true;
 					}
@@ -532,9 +565,29 @@ void loop()
 		arduboy.print(F("\n\n  UP/DOWN=Choose"));
 		arduboy.print(F("\n  A=Select B=Back"));
 	}
+	// End of game Rocket
+	else if (gameState == 6)
+	{
+		player.x += random(-1, 2);
+		player.y += random(-1, 2);
+		
+		camY -= 3;
+		arduboy.tunes.tone(random(130, 140), 10);
+
+		for (int i = 0; i < 20; i++)
+		{
+			if (currentMapData[i + 6].y - camY > 60)
+			{
+				currentMapData[i + 6].x = random(169, 297);
+				currentMapData[i + 6].y = -random((camY * -1) + 50, (camY * -1) + 150);
+			}
+			
+		}
+	}
+
 
 	// Gameplay/End level portal animation Draw
-	if (gameState == 2 || gameState == 3)
+	if (gameState == 2 || gameState == 3 || gameState == 6)
 	{
 #if DEBUG == 1
 		arduboy.setCursor(0, 0);
@@ -627,6 +680,8 @@ void loop()
 #endif
 
 				break;
+			case 17:
+				break;
 			case 99:
 				arduboy.drawBitmap(currentMapData[i].x - camX, currentMapData[i].y - camY, buttonBase, 16, 4, 1);
 				break;
@@ -663,6 +718,20 @@ void loop()
 					arduboy.drawBitmap(-155 - camX, 98 - camY, abButtons, 20, 14, 1);
 					arduboy.fillRect(-152 - camX, 104 - camY, 4, 6, 1);
 				}
+				else if (currentLevel == 14) // Draw Rocket
+				{
+					if (gameState != 6)
+					{
+						arduboy.drawBitmap(215 - camX, -20 - camY, rocket, 36, 53, 1);
+					}
+					else
+					{
+						arduboy.drawBitmap(46 + player.x, 5 + player.y, rocket, 36, 53, 1);
+						arduboy.drawBitmap(55 + player.x, 49 + player.y, rocketFire, 18, 13, 1);
+
+						//arduboy.drawBitmap(55, 49, theEnd, 48, 10, 1);
+					}
+				}
 #endif
 
 				if (gameState == 2)
@@ -676,7 +745,7 @@ void loop()
 
 					arduboy.fillCircle(player.x - camX, player.y - camY, 1, 1);
 		}
-				else
+				else if (gameState == 3)
 				{
 					//arduboy.drawFastVLine(player.x - camX, player.y - camY, spawnY, 1);
 					arduboy.drawRect(player.x - camX, player.y - camY, 2, spawnY, 1);
@@ -689,6 +758,11 @@ void loop()
 
 void LoadLevel(byte levelNumber)
 {
+	spawnX = DEFAULTSPAWNX;
+	spawnY = DEFAULTSPAWNY;
+	player.respawn(spawnX, spawnY);
+	player.gravity = DEFAULTGRAVITY;
+
 	byte i;
 
 	switch (levelNumber)
@@ -772,13 +846,14 @@ void LoadLevel(byte levelNumber)
 			memcpy_P(&currentMapData[i], &level13[i], sizeof(level13[i]));
 		}
 		break;
+	case 14:
+		for (i = 0; i < LEVEL14ARRAYSIZE; i++)
+		{
+			memcpy_P(&currentMapData[i], &level14[i], sizeof(level14[i]));
+		}
+		break;
 	}
 
 	currentLevelArraySize = i;
 	currentLevel = levelNumber;
-	spawnX = DEFAULTSPAWNX;
-	spawnY = DEFAULTSPAWNY;
-	player.gravity = DEFAULTGRAVITY;
-
-	player.respawn(spawnX, spawnY);
 }

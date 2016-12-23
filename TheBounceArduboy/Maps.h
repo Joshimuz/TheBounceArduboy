@@ -11,7 +11,7 @@ struct MapObject
 	short x; short y;
 	byte w; byte h;
 	byte type;	// 0 = block, 1 = spike(4w7h), 2 = endlevel(10w25h), 3 = checkpoint(5w20h), 4 = Portal One, 5 = Portal Two, 6 = Removal Button(16w4h), 7 = Add Button, 8 = Gravity Button
-				// 11 = Upsidedown Spike(4w7h), 15 = 5 spikes(44w8h), 16 = 5 upsidedown spikes(44w8h)
+				// 11 = Upsidedown Spike(4w7h), 15 = 5 spikes(44w8h), 16 = 5 upsidedown spikes(44w8h), 17 End Game Rocket(36w53h)
 				// 99 = Pressed Button, 100 = BlockToAdd
 };
 
@@ -28,9 +28,10 @@ struct MapObject
 #define LEVEL11ARRAYSIZE	74
 #define LEVEL12ARRAYSIZE	74
 #define LEVEL13ARRAYSIZE	87
+#define LEVEL14ARRAYSIZE	26
 #define LARGESTARRAYSIZE	87
 
-#define TOTALNUMBEROFLEVELS 13
+#define TOTALNUMBEROFLEVELS 14
 
 extern const MapObject level1[LEVEL1ARRAYSIZE];
 extern const MapObject level2[LEVEL2ARRAYSIZE];
@@ -45,6 +46,7 @@ extern const MapObject level10[LEVEL10ARRAYSIZE];
 extern const MapObject level11[LEVEL11ARRAYSIZE];
 extern const MapObject level12[LEVEL12ARRAYSIZE];
 extern const MapObject level13[LEVEL13ARRAYSIZE];
+extern const MapObject level14[LEVEL14ARRAYSIZE];
 
 #endif
 

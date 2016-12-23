@@ -17,5 +17,11 @@ extern const unsigned char buttonBase[];
 
 extern const unsigned char menuBall[];
 
+extern const unsigned char rocket[];
+
+extern const unsigned char rocketFire[];
+
+extern const unsigned char theEnd[];
+
 #endif
 
