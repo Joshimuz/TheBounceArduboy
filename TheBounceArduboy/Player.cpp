@@ -2,7 +2,7 @@
 
 #include "Player.h"
 
-void PlayerClass::update(Arduboy& arduboy)
+void PlayerClass::update(Arduboy2& arduboy, ArduboyTones& sound)
 {
 	if (arduboy.pressed(RIGHT_BUTTON))
 	{
@@ -58,7 +58,7 @@ void PlayerClass::update(Arduboy& arduboy)
 			canJump = true;
 		}
 		botCol = false;
-		arduboy.tunes.tone(400 + (fabsf(yVelocity) * 50), 10);
+		sound.tone(400 + (fabsf(yVelocity) * 50), 10);
 	}
 	else if (topCol)
 	{
@@ -68,7 +68,7 @@ void PlayerClass::update(Arduboy& arduboy)
 			canJump = true;
 		}
 		topCol = false;
-		arduboy.tunes.tone(400 + (fabsf(yVelocity) * 50), 10);
+		sound.tone(400 + (fabsf(yVelocity) * 50), 10);
 	}
 
 	if (rightCol)
@@ -76,18 +76,18 @@ void PlayerClass::update(Arduboy& arduboy)
 		xVelocity = fabsf(xVelocity) * -1.5f;
 		canJump = true;
 		rightCol = false;
-		arduboy.tunes.tone(400 + (fabsf(xVelocity) * 50), 10);
+		sound.tone(400 + (fabsf(xVelocity) * 50), 10);
 	}
 	else if (leftCol)
 	{
 		xVelocity = fabsf(xVelocity) * 1.5f;
 		canJump = true;
 		leftCol = false;
-		arduboy.tunes.tone(400 + (fabsf(xVelocity) * 50), 10);
+		sound.tone(400 + (fabsf(xVelocity) * 50), 10);
 	}
 
 	// Add drag
-	yVelocity *= 0.995f; 
+	yVelocity *= 0.995f;
 
 	xVelocity *= 0.98f;
 
@@ -132,10 +132,10 @@ void PlayerClass::respawn(short spawnX, short spawnY)
 	{
 		y += 8;
 	}
-	
+
 
 	yVelocity = 0;
-	xVelocity = 0; 
+	xVelocity = 0;
 
 	canJump = false;
 

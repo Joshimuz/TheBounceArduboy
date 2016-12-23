@@ -4,17 +4,19 @@
 #include "Maps.h"
 #include "Sprites.h"
 #include "Player.h"
-#include "Arduboy.h"
+#include "Arduboy2.h"
+#include "ArduboyTones.h"
 
-Arduboy arduboy;
+Arduboy2 arduboy;
+ArduboyTones sound(arduboy.audio.enabled);
 
 // The current state of the game
 byte gameState = 1; // 1 = MainMenu, 2 = Gameplay, 3 = End level transion, 4 = Options Menu, 5 = Level Select
 
-// The selection in the menu
-byte menuSelection = 1; 
+					// The selection in the menu
+byte menuSelection = 1;
 // If the menu selection was changed the previous frame
-bool selectionChanged; 
+bool selectionChanged;
 
 // The currently used level
 byte currentLevel;
@@ -31,8 +33,8 @@ short camX; short camY;
 short spawnX; short spawnY;
 
 // The kill plane at the bottom of the level
-#define MAPFLOOR			300
-#define MAPCEILING			-350
+#define MAPFLOOR      300
+#define MAPCEILING      -350
 
 #if DEBUG == 0 // Don't draw title screen in debug mode to same ROM for text rendering
 float menuBallY = -15;
@@ -44,10 +46,21 @@ MapObject currentMapData[LARGESTARRAYSIZE];
 
 byte levelUnlocked;
 
-void setup() 
+void setup()
 {
 	// Start arduboy stuff
-	arduboy.beginNoLogo();
+	arduboy.boot();
+
+	arduboy.LCDCommandMode();
+	SPI.transfer(0xd9);
+	SPI.transfer(0x2f);
+
+	SPI.transfer(0xdb);
+	SPI.transfer(0x00);
+
+	SPI.transfer(0x81);
+	SPI.transfer(255);
+	arduboy.LCDDataMode();
 
 	// Framerate to 30
 	// Framerate was 30 on the bugged frame timing (or the thought it was a bug fixed version... idk anymore)
@@ -77,7 +90,7 @@ void setup()
 	}
 }
 
-void loop() 
+void loop()
 {
 	// Wait for the next frame
 	if (!(arduboy.nextFrame()))
@@ -87,7 +100,7 @@ void loop()
 
 	// Intro
 	if (gameState == 1)
-	{	
+	{
 		if (arduboy.pressed(A_BUTTON))
 		{
 			if (!selectionChanged)
@@ -140,11 +153,11 @@ void loop()
 		{
 			menuBallVelo = fabsf(menuBallVelo) * -0.94f;
 		}
-		
+
 		menuBallY += menuBallVelo;
 #endif
 
-		// Draw the menu		
+		// Draw the menu    
 		if (menuSelection == 1)
 		{
 			arduboy.drawBitmap(15, 47, playButton, 31, 14, 1);
@@ -169,12 +182,12 @@ void loop()
 			gameState = 1;
 		}
 
-		player.update(arduboy);
+		player.update(arduboy, sound);
 
 		if (player.y > MAPFLOOR)
 		{
 			// Play death sound
-			arduboy.tunes.tone(700, 100);
+			sound.tone(700, 100);
 
 			// Respawn the player as they have died
 			player.respawn(spawnX, spawnY);
@@ -182,23 +195,23 @@ void loop()
 		else if (player.y < MAPCEILING && !(currentLevel == 8 || currentLevel == 11))
 		{
 			// Play death sound
-			arduboy.tunes.tone(700, 100);
+			sound.tone(700, 100);
 
 			// Respawn the player as they have died
 			player.respawn(spawnX, spawnY);
 		}
 		//else if (currentLevel == 14)
 		//{
-		//	// Player hit end of game Rocket
-		//	if (player.x > 215 && player.x < 251 && player.y > -20 && player.y < 33)
-		//	{
-		//		gameState = 6;
-		//		camX = 169;
-		//		camY = -25;
-		//		player.x = 0;
-		//		player.y = 0;
-		//		EEPROM.write(450, TOTALNUMBEROFLEVELS);
-		//	}
+		//  // Player hit end of game Rocket
+		//  if (player.x > 215 && player.x < 251 && player.y > -20 && player.y < 33)
+		//  {
+		//    gameState = 6;
+		//    camX = 169;
+		//    camY = -25;
+		//    player.x = 0;
+		//    player.y = 0;
+		//    EEPROM.write(450, TOTALNUMBEROFLEVELS);
+		//  }
 		//}
 
 		// Collisions!
@@ -216,77 +229,81 @@ void loop()
 				{
 					switch (currentMapData[i].type)
 					{
-						default:
-							player.botCol = true;
-							break;
-						case 2:
-							gameState = 3;
-							spawnY = 2;
-							break;
-						case 3:
-							if (spawnX != currentMapData[i].x)
-							{
-								arduboy.tunes.tone(4000, 100);
-								spawnX = currentMapData[i].x;
-								spawnY = currentMapData[i].y - 8;
-							}
-							break;
-						case 4:
-							if (player.canInteract)
-							{
-								player.x = (float)(currentMapData[i + 1].x + currentMapData[i + 1].w / 2);
-								player.y = (float)(currentMapData[i + 1].y + currentMapData[i + 1].h / 2);
-							}
+					default:
+						player.botCol = true;
+						break;
+					case 2:
+						gameState = 3;
+						spawnY = 2;
+						break;
+					case 3:
+						if (spawnX != currentMapData[i].x)
+						{
+							sound.tone(4000, 100);
+							spawnX = currentMapData[i].x;
+							spawnY = currentMapData[i].y - 8;
+						}
+						break;
+					case 4:
+						if (player.canInteract)
+						{
+							player.x = (float)(currentMapData[i + 1].x + currentMapData[i + 1].w / 2);
+							player.y = (float)(currentMapData[i + 1].y + currentMapData[i + 1].h / 2);
+						}
 
-							player.hitInteractable();
-							break;
-						case 5:
-							if (player.canInteract)
-							{
-								player.x = (float)(currentMapData[i - 1].x + currentMapData[i - 1].w / 2);
-								player.y = (float)(currentMapData[i - 1].y + currentMapData[i - 1].h / 2);
-							}
+						player.hitInteractable();
+						break;
+					case 5:
+						if (player.canInteract)
+						{
+							player.x = (float)(currentMapData[i - 1].x + currentMapData[i - 1].w / 2);
+							player.y = (float)(currentMapData[i - 1].y + currentMapData[i - 1].h / 2);
+						}
 
-							player.hitInteractable();
-							break;
-						case 6:
-							player.botCol = true;
-							currentMapData[i].type = 99;
-							arduboy.tunes.tone(2000, 100);
-							currentMapData[i - 1] = { 0,0,0,0,0 };
-							break;
-						case 7:
-							player.botCol = true;
-							currentMapData[i].type = 99;
-							arduboy.tunes.tone(2000, 100);
-							currentMapData[i - 1].type -= 100;
-							break;
-						case 8:
-							player.botCol = true;
-							if (player.canInteract && player.gravity >= 0)
-							{
-								player.gravity *= -1;
-								arduboy.tunes.tone(2000, 100);
-							}
-							player.hitInteractable();
-							break;
-						case 17:
-							gameState = 6;
-							camX = 169;
-							camY = -25;
-							player.x = 0;
-							player.y = 0;
-							EEPROM.write(450, TOTALNUMBEROFLEVELS);
+						player.hitInteractable();
+						break;
+					case 6:
+						player.botCol = true;
+						currentMapData[i].type = 99;
+						sound.tone(2000, 100);
+						currentMapData[i - 1] = { 0,0,0,0,0 };
+						break;
+					case 7:
+						player.botCol = true;
+						currentMapData[i].type = 99;
+						sound.tone(2000, 100);
+						currentMapData[i - 1].type -= 100;
+						break;
+					case 8:
+						player.botCol = true;
+						if (player.canInteract && player.gravity >= 0)
+						{
+							player.gravity *= -1;
+							sound.tone(2000, 100);
+						}
+						player.hitInteractable();
+						break;
+					case 17:
+						gameState = 6;
+						camX = 184;
+						camY = 11;
+						player.x = 0;
+						player.y = 0;
+						menuBallY = 255;
+						EEPROM.write(450, TOTALNUMBEROFLEVELS);
 
-							for (int i = 0; i < 20; i++)
-							{
-								currentMapData[i + 6].x = random(169, 297);
-								currentMapData[i + 6].y = -random(50, 150);
-							}
+						for (int i = 0; i < 20; i++)
+						{
+							currentMapData[i + 12].x = random(169, 297);
+							currentMapData[i + 12].y = -random(50, 150);
+						}
 
-							break;
-						case 100:
-							break;
+						delay(500);
+						break;
+					case 100:
+						break;
+					case 117:
+						break;
 					}
 				}
 				else if (player.x >= currentMapData[i].x
@@ -294,8 +311,8 @@ void loop()
 					&& player.y - 3 >= currentMapData[i].y
 					&& player.y - 3 <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && 
-						currentMapData[i].type != 5 && currentMapData[i].type != 17 && currentMapData[i].type != 100)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 &&
+						currentMapData[i].type != 5 && currentMapData[i].type != 17 && currentMapData[i].type != 100 && currentMapData[i].type != 117)
 					{
 						player.topCol = true;
 					}
@@ -309,7 +326,7 @@ void loop()
 						if (player.canInteract && player.gravity <= 0)
 						{
 							player.gravity *= -1;
-							arduboy.tunes.tone(2000, 100);
+							sound.tone(2000, 100);
 						}
 						player.hitInteractable();
 					}
@@ -319,8 +336,8 @@ void loop()
 					&& player.y >= currentMapData[i].y
 					&& player.y <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && 
-						currentMapData[i].type != 5 && currentMapData[i].type != 17 && currentMapData[i].type != 100)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 &&
+						currentMapData[i].type != 5 && currentMapData[i].type != 17 && currentMapData[i].type != 100 && currentMapData[i].type != 117)
 					{
 						player.rightCol = true;
 					}
@@ -330,8 +347,8 @@ void loop()
 					&& player.y >= currentMapData[i].y
 					&& player.y <= currentMapData[i].y + currentMapData[i].h)
 				{
-					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 && 
-						currentMapData[i].type != 5 && currentMapData[i].type != 17 && currentMapData[i].type != 100)
+					if (currentMapData[i].type != 2 && currentMapData[i].type != 3 && currentMapData[i].type != 4 &&
+						currentMapData[i].type != 5 && currentMapData[i].type != 17 && currentMapData[i].type != 100 && currentMapData[i].type != 117)
 					{
 						player.leftCol = true;
 					}
@@ -342,7 +359,7 @@ void loop()
 					if (currentMapData[i].type == 1 || currentMapData[i].type == 11 || currentMapData[i].type == 15 || currentMapData[i].type == 16)
 					{
 						// Play death sound
-						arduboy.tunes.tone(1000, 100);
+						sound.tone(1000, 100);
 
 						// Respawn the player as they have died
 						player.respawn(spawnX, spawnY);
@@ -397,9 +414,9 @@ void loop()
 			//currentLevel++;
 			//player.respawn(spawnX, spawnY);
 
-			
+
 		}
-		arduboy.tunes.tone(5000, 10);
+		sound.tone(5000, 10);
 	}
 	// Options Menu
 	else if (gameState == 4)
@@ -426,30 +443,30 @@ void loop()
 			{
 				switch (menuSelection)
 				{
-					case 0:
-						if (arduboy.audio.enabled())
-						{
-							arduboy.audio.off();
-							arduboy.audio.saveOnOff();
-						}
-						else
-						{
-							arduboy.audio.on();
-							arduboy.audio.saveOnOff();
-						}
-						break;
-					case 1:
-						gameState++;
-						break;
-					case 2:
-						EEPROM.write(450, 1);
-						levelUnlocked = 1;
-						arduboy.print(F("\n\n  Save file deleted!"));
-						arduboy.display();
-						delay(2000);
-						break;
+				case 0:
+					if (arduboy.audio.enabled())
+					{
+						arduboy.audio.off();
+						arduboy.audio.saveOnOff();
+					}
+					else
+					{
+						arduboy.audio.on();
+						arduboy.audio.saveOnOff();
+					}
+					break;
+				case 1:
+					gameState++;
+					break;
+				case 2:
+					EEPROM.write(450, 1);
+					levelUnlocked = 1;
+					arduboy.print(F("\n\n  Save file deleted!"));
+					arduboy.display();
+					delay(2000);
+					break;
 				}
-				
+
 
 				selectionChanged = true;
 			}
@@ -568,20 +585,51 @@ void loop()
 	// End of game Rocket
 	else if (gameState == 6)
 	{
+		if (arduboy.pressed(UP_BUTTON))
+		{
+			//gameState = 1;
+		}
+
+		// Using player position as rocket position
 		player.x += random(-1, 2);
 		player.y += random(-1, 2);
+
+		camY -= 2;
 		
-		camY -= 3;
-		arduboy.tunes.tone(random(130, 140), 10);
+		sound.tone((menuBallY / 2) - random(0, 10), 10);
+
+		// Using menuBallY for contrast variable
+		menuBallY -= 0.2f;
+
+		// Fade out using screen contrast
+		arduboy.LCDCommandMode();
+		SPI.transfer(0x81);
+		SPI.transfer(menuBallY);
+		arduboy.LCDDataMode();
 
 		for (int i = 0; i < 20; i++)
 		{
-			if (currentMapData[i + 6].y - camY > 60)
+			if (currentMapData[i + 12].y - camY > 60)
 			{
-				currentMapData[i + 6].x = random(169, 297);
-				currentMapData[i + 6].y = -random((camY * -1) + 50, (camY * -1) + 150);
+				currentMapData[i + 12].x = random(169, 297);
+				currentMapData[i + 12].y = -random((camY * -1) + 50, (camY * -1) + 150);
 			}
-			
+		}
+
+		if (menuBallY < 0)
+		{
+			delay(1337);
+
+			menuBallY = -15;
+
+			arduboy.LCDCommandMode();
+			SPI.transfer(0x81);
+			SPI.transfer(255);
+			arduboy.LCDDataMode();
+
+			LoadLevel(1);
+
+			gameState = 1;
 		}
 	}
 
@@ -607,7 +655,7 @@ void loop()
 				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
 				break;
 			case 1: // Spike
-				arduboy.drawTriangle(currentMapData[i].x - camX - 4, currentMapData[i].y + currentMapData[i].h - camY, 
+				arduboy.drawTriangle(currentMapData[i].x - camX - 4, currentMapData[i].y + currentMapData[i].h - camY,
 					currentMapData[i].x + (currentMapData[i].w / 2) - camX - 1, currentMapData[i].y - camY - 3,
 					currentMapData[i].x + currentMapData[i].w - camX + 2, currentMapData[i].y + currentMapData[i].h - camY, 1);
 
@@ -616,7 +664,7 @@ void loop()
 #endif
 				break;
 			case 2: // Next Level
-				//arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
+					//arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
 				arduboy.drawRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 1);
 				arduboy.drawFastVLine(random(currentMapData[i].x - camX, currentMapData[i].x - camX + currentMapData[i].w), currentMapData[i].y - camY, currentMapData[i].h, 1);
 				break;
@@ -687,69 +735,71 @@ void loop()
 				break;
 			case 100:
 				break;
-				}
+			case 117:
+				break;
+			}
 
-				// Saves ROM if check for duplicate types outside of switch with same if statement
-				if (currentMapData[i].type == 4 || currentMapData[i].type == 5)
-				{
-					arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
+			// Saves ROM if check for duplicate types outside of switch with same if statement
+			if (currentMapData[i].type == 4 || currentMapData[i].type == 5)
+			{
+				arduboy.drawRoundRect(currentMapData[i].x - camX, currentMapData[i].y - camY, currentMapData[i].w, currentMapData[i].h, 5, 1);
 
-					for (byte z = 0; z < 2; z++)
-					{
-						arduboy.drawPixel(random(currentMapData[i].x + 2, currentMapData[i].x + currentMapData[i].w - 2) - camX, random(currentMapData[i].y + 2, currentMapData[i].y + currentMapData[i].h - 1) - camY, 1);
-					}
-				}
-				else if (currentMapData[i].type == 6 || currentMapData[i].type == 7)
+				for (byte z = 0; z < 2; z++)
 				{
-					arduboy.drawBitmap(currentMapData[i].x - camX, currentMapData[i].y - camY, buttonBase, 16, 4, 1);
-					arduboy.drawRect(currentMapData[i].x - camX + 4, currentMapData[i].y - camY - 2, 8, 3, 1);
+					arduboy.drawPixel(random(currentMapData[i].x + 2, currentMapData[i].x + currentMapData[i].w - 2) - camX, random(currentMapData[i].y + 2, currentMapData[i].y + currentMapData[i].h - 1) - camY, 1);
 				}
-				}
+			}
+			else if (currentMapData[i].type == 6 || currentMapData[i].type == 7)
+			{
+				arduboy.drawBitmap(currentMapData[i].x - camX, currentMapData[i].y - camY, buttonBase, 16, 4, 1);
+				arduboy.drawRect(currentMapData[i].x - camX + 4, currentMapData[i].y - camY - 2, 8, 3, 1);
+			}
+		}
 
 #if DEBUG == 0 // Saving ROM for debug mode
 
-				if (currentLevel == 1) // Draw A button tutorial
-				{
-					arduboy.drawBitmap(305 - camX, 53 - camY, abButtons, 20, 14, 1);
-					arduboy.fillRect(318 - camX, 55 - camY, 4, 6, 1);
-				}
-				else if (currentLevel == 2) // Draw B button tutorial
-				{
-					arduboy.drawBitmap(-155 - camX, 98 - camY, abButtons, 20, 14, 1);
-					arduboy.fillRect(-152 - camX, 104 - camY, 4, 6, 1);
-				}
-				else if (currentLevel == 14) // Draw Rocket
-				{
-					if (gameState != 6)
-					{
-						arduboy.drawBitmap(215 - camX, -20 - camY, rocket, 36, 53, 1);
-					}
-					else
-					{
-						arduboy.drawBitmap(46 + player.x, 5 + player.y, rocket, 36, 53, 1);
-						arduboy.drawBitmap(55 + player.x, 49 + player.y, rocketFire, 18, 13, 1);
-
-						//arduboy.drawBitmap(55, 49, theEnd, 48, 10, 1);
-					}
-				}
-#endif
-
-				if (gameState == 2)
-				{
-#if DEBUG == 1 // Draw player hitboxes
-					arduboy.drawPixel(player.x - camX, player.y + 3 - camY, 1);
-					arduboy.drawPixel(player.x - camX, player.y - 3 - camY, 1);
-					arduboy.drawPixel(player.x + 3 - camX, player.y - camY, 1);
-					arduboy.drawPixel(player.x - 3 - camX, player.y - camY, 1);
-#endif
-
-					arduboy.fillCircle(player.x - camX, player.y - camY, 1, 1);
+		if (currentLevel == 1) // Draw A button tutorial
+		{
+			arduboy.drawBitmap(305 - camX, 53 - camY, abButtons, 20, 14, 1);
+			arduboy.fillRect(318 - camX, 55 - camY, 4, 6, 1);
 		}
-				else if (gameState == 3)
-				{
-					//arduboy.drawFastVLine(player.x - camX, player.y - camY, spawnY, 1);
-					arduboy.drawRect(player.x - camX, player.y - camY, 2, spawnY, 1);
-				}
+		else if (currentLevel == 2) // Draw B button tutorial
+		{
+			arduboy.drawBitmap(-155 - camX, 98 - camY, abButtons, 20, 14, 1);
+			arduboy.fillRect(-152 - camX, 104 - camY, 4, 6, 1);
+		}
+		else if (currentLevel == 14) // Draw Rocket
+		{
+			if (gameState != 6)
+			{
+				arduboy.drawBitmap(215 - camX, 11 - camY, rocket, 36, 53, 1);
+			}
+			else
+			{
+				arduboy.drawBitmap(51 + player.x, 5 + player.y, rocket, 36, 53, 1);
+				arduboy.drawBitmap(60 + player.x, 49 + player.y, rocketFire, 18, 13, 1);
+
+				arduboy.drawBitmap(40, 27, theEnd, 48, 10, 1);
+			}
+		}
+#endif
+
+		if (gameState == 2)
+		{
+#if DEBUG == 1 // Draw player hitboxes
+			arduboy.drawPixel(player.x - camX, player.y + 3 - camY, 1);
+			arduboy.drawPixel(player.x - camX, player.y - 3 - camY, 1);
+			arduboy.drawPixel(player.x + 3 - camX, player.y - camY, 1);
+			arduboy.drawPixel(player.x - 3 - camX, player.y - camY, 1);
+#endif
+
+			arduboy.fillCircle(player.x - camX, player.y - camY, 1, 1);
+		}
+		else if (gameState == 3)
+		{
+			//arduboy.drawFastVLine(player.x - camX, player.y - camY, spawnY, 1);
+			arduboy.drawRect(player.x - camX, player.y - camY, 2, spawnY, 1);
+		}
 
 	}
 

@@ -3,19 +3,20 @@
 #ifndef _PLAYER_h
 #define _PLAYER_h
 
-#include "Arduboy.h"
+#include <Arduboy2.h>
+#include <ArduboyTones.h>
 
-#define	DEFAULTGRAVITY		0.15f
+#define  DEFAULTGRAVITY    0.15f
 
 class PlayerClass
 {
- protected:
-	 float xVelocity;
-	 float yVelocity;
+protected:
+	float xVelocity;
+	float yVelocity;
 
-	 bool canJump;
-	 
- public:
+	bool canJump;
+
+public:
 	float x;
 	float y;
 
@@ -31,7 +32,7 @@ class PlayerClass
 	bool topCol;
 	bool botCol;
 
-	void update(Arduboy& arduboy);
+	void update(Arduboy2& arduboy, ArduboyTones& sound);
 	void respawn(short spawnX, short spawnY);
 	void hitInteractable();
 };
