@@ -50,6 +50,7 @@ void setup()
 {
 	// Start arduboy stuff
 	arduboy.boot();
+	arduboy.flashlight();
 
 	arduboy.LCDCommandMode();
 	arduboy.SPItransfer(0xd9);
