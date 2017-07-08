@@ -52,14 +52,14 @@ void setup()
 	arduboy.boot();
 
 	arduboy.LCDCommandMode();
-	SPI.transfer(0xd9);
-	SPI.transfer(0x2f);
+	arduboy.SPItransfer(0xd9);
+	arduboy.SPItransfer(0x2f);
 
-	SPI.transfer(0xdb);
-	SPI.transfer(0x00);
+	arduboy.SPItransfer(0xdb);
+	arduboy.SPItransfer(0x00);
 
-	SPI.transfer(0x81);
-	SPI.transfer(255);
+	arduboy.SPItransfer(0x81);
+	arduboy.SPItransfer(255);
 	arduboy.LCDDataMode();
 
 	// Framerate to 30
@@ -598,8 +598,8 @@ void loop()
 
 		// Fade out using screen contrast
 		arduboy.LCDCommandMode();
-		SPI.transfer(0x81);
-		SPI.transfer(menuBallY);
+		arduboy.SPItransfer(0x81);
+		arduboy.SPItransfer(menuBallY);
 		arduboy.LCDDataMode();
 
 		for (int i = 0; i < 20; i++)
@@ -618,8 +618,8 @@ void loop()
 			menuBallY = -15;
 
 			arduboy.LCDCommandMode();
-			SPI.transfer(0x81);
-			SPI.transfer(255);
+			arduboy.SPItransfer(0x81);
+			arduboy.SPItransfer(255);
 			arduboy.LCDDataMode();
 
 			LoadLevel(1);
